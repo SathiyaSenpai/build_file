@@ -147,9 +147,13 @@ git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git \
     --depth 1 vendor/avalon-priv
 
     # ================= SYMLINK =================
-echo ">>>> [STEP] Symlink vendor/lunaris -> vendor/lineage"
-rm -rf vendor/lunaris
-ln -sf $(pwd)/vendor/lineage vendor/lunaris
+rm -f vendor/lunaris
+
+# Create just the necessary directory structure
+mkdir -p vendor/lunaris/config
+
+# Create a lunaris.mk that just includes the real one from vendor/lineage
+echo '$(call inherit-product, vendor/lineage/config/lunaris.mk)' > vendor/lunaris/config/lunaris.mk
 
 echo ">>>> [STEP] Export info & Build"
 . build/envsetup.sh
