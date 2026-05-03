@@ -1,23 +1,8 @@
 #!/bin/bash
 set -o pipefail
-
-if [ -f .env ]; then
-    set -o allexport
-    source .env
-    set +o allexport
-else
-    echo "❌ ERROR: .env file not found!"
-    echo ""
-    echo "Fix: connect to devspace and run:"
-    echo "  cat > .env << 'EOF'"
-    echo "  BOT=\"your_telegram_bot_token\""
-    echo "  CHAT=\"your_log_chat_id\""
-    echo "  UPLOAD=\"your_upload_chat_id\""
-    echo "  GITHUB_PAT=\"your_github_token\""
-    echo "  PIXELDRAIN=\"your_pixeldrain_key\""
-    echo "  EOF"
-    exit 1
-fi
+set -o allexport
+source .env
+set +o allexport
 
 # ================= TIMEZONE =================
 echo "🕒 Switching system timezone to Asia/Kolkata (IST)"
@@ -27,9 +12,8 @@ echo "🕒 Current system time: $(date)"
 
 # ================= JQ =================
 if ! command -v jq &> /dev/null; then
-    echo "📦 Installing jq..."
     mkdir -p ~/bin
-    curl -fsSL -o ~/bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7/jq-linux64
+    curl -L -o ~/bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7/jq-linux64
     chmod +x ~/bin/jq
     export PATH=$HOME/bin:$PATH
 fi
@@ -89,6 +73,7 @@ gofile_upload() {
     for S in $(printf "%s\n" "${SERVERS[@]}" | shuf); do
         RESP=$(curl -s -F "file=@${FILE}" "https://${S}.gofile.io/uploadFile")
         LINK=$(echo "$RESP" | jq -r '.data.downloadPage // empty')
+
         if [ -n "$LINK" ]; then
             echo "$LINK"
             return
@@ -100,7 +85,6 @@ gofile_upload() {
 
 # ================= FAIL =================
 on_fail() {
-    echo "💥 Build failed. Collecting logs..."
     ERR_LINK=""
     BUILD_LINK=""
 
@@ -110,14 +94,21 @@ on_fail() {
     HEADER_MSG="✧ Build failed ✧
 🧩 ${DEVICE} | ${BUILD_VARIANT} | ${ANDROID_VERSION}
 "
+
     LOG_MSG=""
-    [ -n "$ERR_LINK" ]   && LOG_MSG="${LOG_MSG}
+
+    [ -n "$ERR_LINK" ] && LOG_MSG="${LOG_MSG}
 ⋄ [Error Log](${ERR_LINK})"
+
     [ -n "$BUILD_LINK" ] && LOG_MSG="${LOG_MSG}
 ⋄ [Build Log](${BUILD_LINK})"
-    [ -n "$LOG_MSG" ]    && LOG_MSG="╭─ 📜 LOGS${LOG_MSG}"
+
+    if [ -n "$LOG_MSG" ]; then
+        LOG_MSG="╭─ 📜 LOGS${LOG_MSG}"
+    fi
 
     tg_upload "${HEADER_MSG}${LOG_MSG}"
+
     tg_send "💥 *Compilation failed, check build logs*"
 
     exit 1
@@ -129,24 +120,21 @@ tg_send "🌙 *${ROM_NAME}* buildbot triggered
 🧪 Type: *${BUILD_VARIANT}*
 🌏 _$(date +"%d %b %Y %I:%M %p IST")_"
 
-# ================= CLEAN =================
+# ================= BUILD =================
 echo ">>>> [STEP] Clean"
 rm -rf .repo/local_manifests \
        vendor/avalon-priv
 
-# ================= REPO INIT =================
 echo ">>>> [STEP] Repo Init"
 repo init --no-repo-verify --git-lfs \
     -u https://github.com/Lunaris-AOSP/android.git \
     -b 16.2 \
     -g default,-mips,-darwin,-notdefault
 
-# ================= LOCAL MANIFESTS =================
 echo ">>>> [STEP] Local Manifests"
 git clone https://github.com/SathiyaSenpai/lunaris_local_manifests \
     --depth 1 -b lunaris .repo/local_manifests
 
-# ================= REPO SYNC =================
 echo ">>>> [STEP] Repo Sync"
 if [ -f /opt/crave/resync.sh ]; then
     /opt/crave/resync.sh
@@ -154,21 +142,19 @@ else
     repo sync -c --force-sync --no-tags --no-clone-bundle -j$(nproc --all)
 fi
 
-# ================= SIGNING KEYS =================
 echo ">>>> [STEP] Clone signing keys (avalon-priv)"
 git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git \
     --depth 1 vendor/avalon-priv
 
-# ================= BUILD SETUP =================
-echo ">>>> [STEP] Setup build environment"
+echo ">>>> [STEP] Export info & Build"
 . build/envsetup.sh
 lunch lineage_avalon-bp4a-user
 export BUILD_USERNAME=sathiyasenpai
 export BUILD_HOSTNAME=crave
 mka installclean
 
-# ================= BUILD =================
-echo ">>>> [STEP] Building"
+# ================= BUILD RUN =================
+set -o pipefail
 mka bacon 2>&1 | tee "$BUILD_LOG"
 
 if [ "${PIPESTATUS[0]}" -ne 0 ]; then
@@ -210,6 +196,7 @@ HEADER_MSG="✧ ${ROM_NAME} Artifacts ✧
 UPLOAD_MSG=""
 IMG_MSG=""
 
+# ROM
 if [ -n "$ROM_ZIP" ]; then
     GO_URL=$(gofile_upload "$ROM_ZIP")
     PD_URL=$(pixeldrain_upload "$ROM_ZIP")
@@ -221,25 +208,33 @@ if [ -n "$ROM_ZIP" ]; then
 "
 fi
 
+# IMAGES
 for IMG in boot.img vendor_boot.img init_boot.img super_empty.img recovery.img; do
     FILE="${OUT_DIR}/${IMG}"
+
     if [ -f "$FILE" ]; then
         GO_URL=$(gofile_upload "$FILE")
+
         IMG_MSG="${IMG_MSG}
 ⋄ [${IMG}](${GO_URL})"
     fi
 done
 
+# OTA
 OTA_JSON="${OUT_DIR}/${DEVICE}.json"
+
 if [ -f "$OTA_JSON" ]; then
     GO_URL=$(gofile_upload "$OTA_JSON")
+
     IMG_MSG="${IMG_MSG}
 
 ╭─ 📜 OTA
 ⋄ [OTA JSON](${GO_URL})"
 fi
 
-[ -n "$IMG_MSG" ] && IMG_MSG="╭─ 🧩 IMAGES${IMG_MSG}"
+if [ -n "$IMG_MSG" ]; then
+    IMG_MSG="╭─ 🧩 IMAGES${IMG_MSG}"
+fi
 
 FINAL_MESSAGE="${HEADER_MSG}${UPLOAD_MSG}${IMG_MSG}"
 
