@@ -146,6 +146,11 @@ echo ">>>> [STEP] Clone signing keys (avalon-priv)"
 git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git \
     --depth 1 vendor/avalon-priv
 
+    # ================= SYMLINK =================
+echo ">>>> [STEP] Symlink vendor/lunaris -> vendor/lineage"
+rm -rf vendor/lunaris
+ln -sf $(pwd)/vendor/lineage vendor/lunaris
+
 echo ">>>> [STEP] Export info & Build"
 . build/envsetup.sh
 lunch lineage_avalon-bp4a-user
