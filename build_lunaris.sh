@@ -147,7 +147,7 @@ git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git \
     --depth 1 vendor/avalon-priv
 
     # ================= SYMLINK =================
-rm -f vendor/lunaris
+rm -rf vendor/lunaris
 
 # Create just the necessary directory structure
 mkdir -p vendor/lunaris/config
