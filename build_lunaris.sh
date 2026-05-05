@@ -156,6 +156,10 @@ mkdir -p vendor/lunaris/config
 # Create a lunaris.mk that just includes the real one from vendor/lineage
 echo '$(call inherit-product, vendor/lineage/config/lunaris.mk)' > vendor/lunaris/config/lunaris.mk
 
+# ================= FIX BUILD-MANIFEST =================
+echo ">>>> [STEP] Fix build-manifest issue"
+sed -i 's/^INSTALLED_BUILD_MANIFEST_XML_TARGET/# INSTALLED_BUILD_MANIFEST_XML_TARGET/' vendor/lineage/build/core/default_installed_modules.mk
+
 echo ">>>> [STEP] Export info & Build"
 . build/envsetup.sh
 lunch lineage_avalon-bp4a-user
