@@ -123,7 +123,8 @@ tg_send "🌙 *${ROM_NAME}* buildbot triggered
 # ================= BUILD =================
 echo ">>>> [STEP] Clean"
 rm -rf .repo/local_manifests \
-       vendor/avalon-priv
+       vendor/avalon-priv \
+       out/target/product/avalon/obj/KERNEL_OBJ
 
 echo ">>>> [STEP] Repo Init"
 repo init --no-repo-verify --git-lfs \
