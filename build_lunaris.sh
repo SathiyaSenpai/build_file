@@ -150,10 +150,8 @@ git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git \
     # ================= SYMLINK =================
 rm -rf vendor/lunaris
 
-# Create just the necessary directory structure
 mkdir -p vendor/lunaris/config
 
-# Create a lunaris.mk that just includes the real one from vendor/lineage
 echo '$(call inherit-product, vendor/lineage/config/lunaris.mk)' > vendor/lunaris/config/lunaris.mk
 
 # ================= FIX BUILD-MANIFEST =================
