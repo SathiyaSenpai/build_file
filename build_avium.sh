@@ -19,9 +19,9 @@ if ! command -v jq &> /dev/null; then
 fi
 
 # ================= CONFIGS =================
-ROM_NAME="LunarisAOSP"
+ROM_NAME="Avium UI"
 DEVICE="avalon"
-BUILD_VARIANT="user"
+BUILD_VARIANT="userdebug"
 ANDROID_VERSION="Android 16"
 PROJECT_VERSION="16.2"
 MAINTAINER="Sathiya"
@@ -128,13 +128,13 @@ rm -rf .repo/local_manifests \
 
 echo ">>>> [STEP] Repo Init"
 repo init --no-repo-verify --git-lfs \
-    -u https://github.com/Lunaris-AOSP/android.git \
-    -b 16.2 \
+    -u https://github.com/AviumUI/android_manifests \
+    -b avium-16.2 \
     -g default,-mips,-darwin,-notdefault
 
 echo ">>>> [STEP] Local Manifests"
-git clone https://github.com/SathiyaSenpai/lunaris_local_manifests \
-    --depth 1 -b lunaris .repo/local_manifests
+git clone https://github.com/SathiyaSenpai/local_manifests \
+    --depth 1 -b avium-ui .repo/local_manifests
 
 echo ">>>> [STEP] Repo Sync"
 if [ -f /opt/crave/resync.sh ]; then
@@ -147,23 +147,47 @@ echo ">>>> [STEP] Clone signing keys (avalon-priv)"
 git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git \
     --depth 1 vendor/avalon-priv
 
-    # ================= SYMLINK =================
-rm -rf vendor/lunaris
-
-mkdir -p vendor/lunaris/config
-
-echo '$(call inherit-product, vendor/lineage/config/lunaris.mk)' > vendor/lunaris/config/lunaris.mk
-
 # ================= FIX BUILD-MANIFEST =================
-echo ">>>> [STEP] Fix build-manifest issue"
-sed -i 's/^INSTALLED_BUILD_MANIFEST_XML_TARGET/# INSTALLED_BUILD_MANIFEST_XML_TARGET/' vendor/lineage/build/core/default_installed_modules.mk
 
 echo ">>>> [STEP] Export info & Build"
 . build/envsetup.sh
-lunch lineage_avalon-bp4a-user
+lunch lineage_$avalon-bp4a-userdebug
 export BUILD_USERNAME=sathiyasenpai
 export BUILD_HOSTNAME=crave
-mka installclean
+mka clean
+
+# ================= BUILD START =================
+tg_send "🌙 *${ROM_NAME}* buildbot triggered
+🧩 *${DEVICE}* | *${ANDROID_VERSION}* | *${PROJECT_VERSION}*
+🧪 Type: *${BUILD_VARIANT}*
+🌏 _$(date +"%d %b %Y %I:%M %p IST")_"
+
+# ================= BUILD =================
+echo ">>>> [STEP] Clean"
+rm -rf .repo/local_manifests \
+       vendor/avalon-priv \
+       out/target/product/avalon/obj/KERNEL_OBJ
+
+echo ">>>> [STEP] Repo Init"
+repo init --no-repo-verify --git-lfs \
+    -u https://github.com/AviumUI/android_manifests \
+    -b avium-16.2 \
+    -g default,-mips,-darwin,-notdefault
+
+echo ">>>> [STEP] Local Manifests"
+git clone https://github.com/SathiyaSenpai/local_manifests \
+    --depth 1 -b avium-ui .repo/local_manifests
+
+echo ">>>> [STEP] Repo Sync"
+if [ -f /opt/crave/resync.sh ]; then
+    /opt/crave/resync.sh
+else
+    repo sync -c --force-sync --no-tags --no-clone-bundle -j$(nproc --all)
+fi
+
+echo ">>>> [STEP] Clone signing keys (avalon-priv)"
+git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git \
+    --depth 1 vendor/avalon-priv
 
 # ================= BUILD RUN =================
 set -o pipefail
