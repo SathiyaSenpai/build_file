@@ -48,22 +48,6 @@ tg_upload() {
         --data-urlencode "text=$1" >/dev/null
 }
 
-# ================= PIXELDRAIN =================
-pixeldrain_upload() {
-    local FILE="$1"
-    if [ -f "$FILE" ]; then
-        RESPONSE=$(curl -s -u ":$PIXELDRAIN" -F "file=@$FILE" https://pixeldrain.com/api/file)
-        FILE_ID=$(echo "$RESPONSE" | jq -r '.id')
-        if [[ "$FILE_ID" != "null" && -n "$FILE_ID" ]]; then
-            echo "https://pixeldrain.com/u/$FILE_ID"
-        else
-            echo ""
-        fi
-    else
-        echo ""
-    fi
-}
-
 # ================= GOFILE =================
 gofile_upload() {
     local FILE="$1"
@@ -124,17 +108,13 @@ tg_send "🌙 *${ROM_NAME}* buildbot triggered
 echo ">>>> [STEP] Clean"
 rm -rf .repo/local_manifests \
        vendor/avalon-priv \
-       out/target/product/avalon/obj/KERNEL_OBJ
+       out/
 
 echo ">>>> [STEP] Repo Init"
-repo init --no-repo-verify --git-lfs \
-    -u https://github.com/AviumUI/android_manifests \
-    -b avium-16.2 \
-    -g default,-mips,-darwin,-notdefault
+repo init --no-repo-verify -u https://github.com/AviumUI/android_manifests -b avium-16.2 --git-lfs
 
 echo ">>>> [STEP] Local Manifests"
-git clone https://github.com/SathiyaSenpai/local_manifests \
-    --depth 1 -b avium-ui .repo/local_manifests
+git clone https://github.com/SathiyaSenpai/local_manifests --depth 1 -b avium-ui .repo/local_manifests
 
 echo ">>>> [STEP] Repo Sync"
 if [ -f /opt/crave/resync.sh ]; then
@@ -144,17 +124,15 @@ else
 fi
 
 echo ">>>> [STEP] Clone signing keys (avalon-priv)"
-git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git \
-    --depth 1 vendor/avalon-priv
+git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git --depth 1 vendor/avalon-priv
 
 # ================= FIX BUILD-MANIFEST =================
 
 echo ">>>> [STEP] Export info & Build"
 . build/envsetup.sh
-lunch lineage_$avalon-bp4a-userdebug
-export BUILD_USERNAME=sathiyasenpai
+lunch lineage_avalon-bp4a-userdebug
+export BUILD_USERNAME=SathiyaSenpai
 export BUILD_HOSTNAME=crave
-mka clean
 
 # ================= BUILD START =================
 tg_send "🌙 *${ROM_NAME}* buildbot triggered
@@ -162,36 +140,9 @@ tg_send "🌙 *${ROM_NAME}* buildbot triggered
 🧪 Type: *${BUILD_VARIANT}*
 🌏 _$(date +"%d %b %Y %I:%M %p IST")_"
 
-# ================= BUILD =================
-echo ">>>> [STEP] Clean"
-rm -rf .repo/local_manifests \
-       vendor/avalon-priv \
-       out/target/product/avalon/obj/KERNEL_OBJ
-
-echo ">>>> [STEP] Repo Init"
-repo init --no-repo-verify --git-lfs \
-    -u https://github.com/AviumUI/android_manifests \
-    -b avium-16.2 \
-    -g default,-mips,-darwin,-notdefault
-
-echo ">>>> [STEP] Local Manifests"
-git clone https://github.com/SathiyaSenpai/local_manifests \
-    --depth 1 -b avium-ui .repo/local_manifests
-
-echo ">>>> [STEP] Repo Sync"
-if [ -f /opt/crave/resync.sh ]; then
-    /opt/crave/resync.sh
-else
-    repo sync -c --force-sync --no-tags --no-clone-bundle -j$(nproc --all)
-fi
-
-echo ">>>> [STEP] Clone signing keys (avalon-priv)"
-git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git \
-    --depth 1 vendor/avalon-priv
-
 # ================= BUILD RUN =================
 set -o pipefail
-mka bacon 2>&1 | tee "$BUILD_LOG"
+m bacon 2>&1 | tee "$BUILD_LOG"
 
 if [ "${PIPESTATUS[0]}" -ne 0 ]; then
     on_fail
@@ -235,12 +186,10 @@ IMG_MSG=""
 # ROM
 if [ -n "$ROM_ZIP" ]; then
     GO_URL=$(gofile_upload "$ROM_ZIP")
-    PD_URL=$(pixeldrain_upload "$ROM_ZIP")
 
     UPLOAD_MSG="${UPLOAD_MSG}
 ╭─ 📦 ROM
 ⋄ [GoFile](${GO_URL})
-⋄ [PixelDrain](${PD_URL})
 "
 fi
 
