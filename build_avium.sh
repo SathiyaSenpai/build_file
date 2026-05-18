@@ -1,8 +1,8 @@
 #!/bin/bash
 set -o pipefail
-set -o allexport
-source .env
-set +o allexport
+BOT="8640370988:AAFg92jtDY3e6E3H7s4tng5pAAYCCn2qGcc"
+UPLOAD="-1003999660004"
+CHAT="-1003917803238"
 
 # ================= TIMEZONE =================
 echo "🕒 Switching system timezone to Asia/Kolkata (IST)"
@@ -126,7 +126,8 @@ else
 fi
 
 echo ">>>> [STEP] Clone signing keys (avalon-priv)"
-git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv.git --depth 1 vendor/avalon-priv
+git clone https://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@github.com/SathiyaSenpai/avalon-priv --depth 1 vendor/avalon-priv
+git clone https://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@github.com/SathiyaSenpai/lineage-priv --depth 1 vendor/lineage-priv
 
 # ================= FIX BUILD-MANIFEST =================
 
