@@ -126,8 +126,8 @@ else
 fi
 
 echo ">>>> [STEP] Clone signing keys (avalon-priv)"
-git clone https://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@github.com/SathiyaSenpai/avalon-priv --depth 1 vendor/avalon-priv
-git clone https://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@github.com/SathiyaSenpai/lineage-priv --depth 1 vendor/lineage-priv
+git clone https://github.com/SathiyaSenpai/avalon-priv --depth 1 vendor/avalon-priv
+git clone https://github.com/SathiyaSenpai/lineage-priv --depth 1 vendor/lineage-priv
 
 # ================= FIX BUILD-MANIFEST =================
 
