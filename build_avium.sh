@@ -32,6 +32,14 @@ BUILD_LOG="build.log"
 ERROR_LOG="out/error.log"
 
 # ================= TELEGRAM =================
+tg_send_photo() {
+    curl -s -X POST "https://api.telegram.org/bot${BOT}/sendPhoto" \
+        --data-urlencode "chat_id=${CHAT}" \
+        --data-urlencode "photo=$1" \
+        --data-urlencode "parse_mode=Markdown" \
+        --data-urlencode "caption=$2" >/dev/null
+}
+
 tg_send() {
     curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" \
         --data-urlencode "chat_id=${CHAT}" \
@@ -98,12 +106,6 @@ on_fail() {
     exit 1
 }
 
-# ================= BUILD START =================
-tg_send "🌙 *${ROM_NAME}* buildbot triggered
-🧩 *${DEVICE}* | *${ANDROID_VERSION}* | *${PROJECT_VERSION}*
-🧪 Type: *${BUILD_VARIANT}*
-🌏 _$(date +"%d %b %Y %I:%M %p IST")_"
-
 # ================= BUILD =================
 echo ">>>> [STEP] Clean"
 rm -rf .repo/local_manifests \
@@ -135,7 +137,7 @@ export BUILD_USERNAME=SathiyaSenpai
 export BUILD_HOSTNAME=crave
 
 # ================= BUILD START =================
-tg_send "🌙 *${ROM_NAME}* buildbot triggered
+tg_send_photo "https://raw.githubusercontent.com/SathiyaSenpai/build_file/avium/assets/header.png" "🌙 *${ROM_NAME}* buildbot triggered
 🧩 *${DEVICE}* | *${ANDROID_VERSION}* | *${PROJECT_VERSION}*
 🧪 Type: *${BUILD_VARIANT}*
 🌏 _$(date +"%d %b %Y %I:%M %p IST")_"
@@ -168,7 +170,7 @@ if [ -n "$ROM_ZIP" ]; then
 🧑‍💻 \`${MAINTAINER}\`
 ⏳ _Compilation took $((DUR/3600))h $(((DUR%3600)/60))min_"
 
-    tg_send "🌙 _The moon has spoken. Uploading artifacts…_"
+    tg_send "🌙 _Uploading artifacts…_"
 fi
 
 # ================= UPLOAD =================
@@ -224,4 +226,4 @@ fi
 FINAL_MESSAGE="${HEADER_MSG}${UPLOAD_MSG}${IMG_MSG}"
 
 tg_upload "$FINAL_MESSAGE"
-tg_send "🌙 _Artifacts released under the moonlight._"
+tg_send "🌙 _Artifacts released_"
