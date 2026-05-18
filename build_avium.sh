@@ -1,8 +1,5 @@
 #!/bin/bash
 set -o pipefail
-BOT="8640370988:AAFg92jtDY3e6E3H7s4tng5pAAYCCn2qGcc"
-UPLOAD="-1003999660004"
-CHAT="-1003917803238"
 
 # ================= TIMEZONE =================
 echo "🕒 Switching system timezone to Asia/Kolkata (IST)"
