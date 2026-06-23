@@ -1,227 +1,232 @@
 #!/bin/bash
-set -o pipefail
 
-# ================= TIMEZONE =================
-echo "🕒 Switching system timezone to Asia/Kolkata (IST)"
-sudo rm -f /etc/localtime
-sudo ln -s /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
-echo "🕒 Current system time: $(date)"
+set -e
 
-# ================= JQ =================
-if ! command -v jq &> /dev/null; then
-    mkdir -p ~/bin
-    curl -L -o ~/bin/jq https://github.com/jqlang/jq/releases/download/jq-1.7/jq-linux64
-    chmod +x ~/bin/jq
-    export PATH=$HOME/bin:$PATH
-fi
-
-# ================= CONFIGS =================
-ROM_NAME="Avium UI"
+# CONFIG
+TG_BOT_TOKEN="8640370988:AAE0hHei8sUaW0NtZzRLtrXTHk3hpNc9S74"
+TG_CHAT_ID="-1003917803238"
+ROM_MANIFEST="https://github.com/Lunaris-AOSP/android"
+ROM_BRANCH="lineage-23.2"
+LUNCH_TARGET="lineage_avalon-bp4a-user" 
+BUILD_CMD="m bacon"
 DEVICE="avalon"
-BUILD_VARIANT="userdebug"
-ANDROID_VERSION="Android 16"
-PROJECT_VERSION="16.2"
-MAINTAINER="Sathiya"
 
-OUT_DIR="out/target/product/${DEVICE}"
 START_TIME=$(date +%s)
-BUILD_LOG="build.log"
-ERROR_LOG="out/error.log"
+LOG_TAG="Lunaris | avalon"
 
-# ================= TELEGRAM =================
-tg_send_photo() {
-    curl -s -X POST "https://api.telegram.org/bot${BOT}/sendPhoto" \
-        --data-urlencode "chat_id=${CHAT}" \
-        --data-urlencode "photo=$1" \
-        --data-urlencode "parse_mode=Markdown" \
-        --data-urlencode "caption=$2" >/dev/null
-}
-
+# Telegram
 tg_send() {
-    curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" \
-        --data-urlencode "chat_id=${CHAT}" \
-        --data-urlencode "parse_mode=Markdown" \
-        --data-urlencode "disable_web_page_preview=true" \
-        --data-urlencode "text=$1" >/dev/null
+    curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+        -d chat_id="${TG_CHAT_ID}" \
+        -d parse_mode="HTML" \
+        -d text="$1" > /dev/null
 }
 
-tg_upload() {
-    curl -s -X POST "https://api.telegram.org/bot${BOT}/sendMessage" \
-        --data-urlencode "chat_id=${UPLOAD}" \
-        --data-urlencode "parse_mode=Markdown" \
-        --data-urlencode "disable_web_page_preview=true" \
-        --data-urlencode "text=$1" >/dev/null
-}
-
-# ================= GOFILE =================
-gofile_upload() {
+tg_send_file() {
     local FILE="$1"
+    local CAPTION="$2"
+    curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendDocument" \
+        -F chat_id="${TG_CHAT_ID}" \
+        -F document=@"$FILE" \
+        -F caption="$CAPTION" \
+        -F parse_mode="HTML" > /dev/null
+}
 
-    mapfile -t SERVERS < <(curl -s https://api.gofile.io/servers | jq -r '.data.servers[].name')
+elapsed() {
+    local ELAPSED=$(( $(date +%s) - START_TIME ))
+    printf '%dh %dm %ds' $(( ELAPSED/3600 )) $(( (ELAPSED%3600)/60 )) $(( ELAPSED%60 ))
+}
 
-    for S in $(printf "%s\n" "${SERVERS[@]}" | shuf); do
-        RESP=$(curl -s -F "file=@${FILE}" "https://${S}.gofile.io/uploadFile")
-        LINK=$(echo "$RESP" | jq -r '.data.downloadPage // empty')
+# GoFile upload
+gofile_upload() {
+    local FILE_PATH="$1"
+    local FILENAME=$(basename "$FILE_PATH")
 
-        if [ -n "$LINK" ]; then
-            echo "$LINK"
-            return
+    echo "[*] Fetching best GoFile server..."
+    local SERVER=$(curl -s "https://api.gofile.io/servers" \
+        | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['servers'][0]['name'])")
+
+    if [ -z "$SERVER" ]; then
+        echo "[!] Could not get GoFile server, falling back to store1"
+        SERVER="store1"
+    fi
+
+    echo "[*] Uploading $FILENAME to GoFile server: $SERVER"
+    local UPLOAD_RESPONSE=$(curl -s \
+        -F "file=@${FILE_PATH}" \
+        "https://${SERVER}.gofile.io/contents/uploadfile")
+
+    echo "$UPLOAD_RESPONSE"
+    local DOWNLOAD_URL=$(echo "$UPLOAD_RESPONSE" \
+        | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['downloadPage'])" 2>/dev/null)
+
+    echo "$DOWNLOAD_URL"
+}
+
+# Notify build started
+tg_send "🔨 <b>${LOG_TAG}</b>
+<b>Status:</b> Build started
+<b>Target:</b> <code>${LUNCH_TARGET}</code>
+<b>Time:</b> $(date '+%Y-%m-%d %H:%M:%S UTC')"
+
+echo "════════════════════════════════════"
+echo "  AviumUI Build — OnePlus Nord 4"
+echo "════════════════════════════════════"
+
+# repo init
+echo "[*] Initializing repo..."
+repo init -u "${ROM_MANIFEST}" -b "${ROM_BRANCH}" --git-lfs --depth=1 2>&1
+
+# Clone device trees via local manifest
+echo "[*] Setting up local manifests..."
+mkdir -p .repo/local_manifests
+
+cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+  <remote name="sathiya"
+          fetch="https://github.com/SathiyaSenpai" />
+  <remote name="lineage"
+          fetch="https://github.com/LineageOS" />
+  <project name="android_device_oneplus_avalon"
+           path="device/oneplus/avalon"
+           remote="sathiya"
+           revision="lunaris" />
+  <project name="android_device_oneplus_sm8650-common"
+           path="device/oneplus/sm8650-common"
+           remote="sathiya"
+           revision="lineage-23.2" />
+  <project name="android_kernel_oneplus_sm8650"
+           path="kernel/oneplus/sm8650"
+           remote="sathiya"
+           revision="lineage-23.2" />
+  <project name="android_kernel_oneplus_sm8650-modules"
+           path="kernel/oneplus/sm8650-modules"
+           remote="sathiya"
+           revision="lineage-23.2" />
+  <project name="android_kernel_oneplus_sm8650-devicetrees"
+           path="kernel/oneplus/sm8650-devicetrees"
+           remote="sathiya"
+           revision="lineage-23.2" />
+  <project name="proprietary_vendor_oneplus_avalon"
+           path="vendor/oneplus/avalon"
+           remote="sathiya"
+           revision="lineage-23.2" />
+  <project name="proprietary_vendor_oneplus_sm8650-common"
+           path="vendor/oneplus/sm8650-common"
+           remote="sathiya"
+           revision="lineage-23.2" />
+  <project name="android_hardware_oplus"
+           path="hardware/oplus"
+           remote="sathiya"
+           revision="lineage-23.2" />
+  <project name="android_hardware_dolby_interfaces"
+           path="hardware/dolby/interfaces"
+           remote="lineage"
+           revision="lineage-23.2" />
+  <project name="android_hardware_dolby"
+           path="hardware/dolby"
+           remote="sathiya"
+           revision="16.0" />
+  <project name="lineage-priv"
+           path="vendor/lineage-priv"
+           remote="sathiya"
+           revision="main" />
+</manifest>
+LOCALMANIFEST
+
+echo "[*] Local manifest written."
+
+# ─── Step 4: repo sync ────────────────────────────────────────
+echo "[*] Syncing sources..."
+tg_send "🔄 <b>${LOG_TAG}</b>
+<b>Status:</b> Syncing sources..."
+
+repo sync -c --no-clone-bundle --no-tags --optimized-fetch \
+    --force-sync -j$(nproc --all) 2>&1
+
+echo "[*] Sync complete."
+tg_send "✅ <b>${LOG_TAG}</b>
+<b>Status:</b> Sync done, starting compilation..."
+
+# ─── Step 5: Build ────────────────────────────────────────────
+echo "[*] Setting up build environment..."
+source build/envsetup.sh
+
+echo "[*] Lunching target: ${LUNCH_TARGET}"
+lunch "${LUNCH_TARGET}"
+
+echo "[*] Building..."
+${BUILD_CMD} 2>&1
+
+BUILD_STATUS=$?
+
+# ─── Step 6: Upload & Notify ──────────────────────────────────
+if [ $BUILD_STATUS -eq 0 ]; then
+    echo "[*] Build succeeded! Looking for output zip..."
+
+    # Find the output zip (OTA package)
+    OUT_DIR="out/target/product/${DEVICE}"
+    ZIP_FILE=$(find "${OUT_DIR}" -maxdepth 1 -name "lineage-*.zip" -o \
+                                              -name "avium-*.zip" -o \
+                                              -name "*${DEVICE}*.zip" \
+               2>/dev/null | grep -v "ota_update" | head -1)
+
+    if [ -z "$ZIP_FILE" ]; then
+        echo "[!] Could not find output ZIP in ${OUT_DIR}"
+        tg_send "⚠️ <b>${LOG_TAG}</b>
+Build succeeded but ZIP not found in <code>${OUT_DIR}</code>
+Elapsed: $(elapsed)"
+        exit 1
+    fi
+
+    ZIP_SIZE=$(du -sh "$ZIP_FILE" | cut -f1)
+    echo "[*] Found: $ZIP_FILE (${ZIP_SIZE})"
+
+    tg_send "📦 <b>${LOG_TAG}</b>
+<b>Status:</b> Build done! Uploading to GoFile...
+<b>File:</b> <code>$(basename $ZIP_FILE)</code>
+<b>Size:</b> ${ZIP_SIZE}
+<b>Elapsed:</b> $(elapsed)"
+
+    # Upload to GoFile
+    DOWNLOAD_URL=$(gofile_upload "$ZIP_FILE" | tail -1)
+
+    if [ -z "$DOWNLOAD_URL" ] || [[ "$DOWNLOAD_URL" != http* ]]; then
+        tg_send "⚠️ <b>${LOG_TAG}</b>
+Build succeeded but GoFile upload failed.
+<b>File:</b> <code>$(basename $ZIP_FILE)</code>"
+    else
+        # Also find md5 if exists
+        MD5_FILE="${ZIP_FILE}.md5sum"
+        MD5=""
+        if [ -f "$MD5_FILE" ]; then
+            MD5=$(cat "$MD5_FILE" | awk '{print $1}')
+        else
+            MD5=$(md5sum "$ZIP_FILE" | awk '{print $1}')
         fi
-    done
 
-    echo ""
-}
+        tg_send "✅ <b>${LOG_TAG} — BUILD COMPLETE</b>
 
-# ================= FAIL =================
-on_fail() {
-    ERR_LINK=""
-    BUILD_LINK=""
+📱 <b>Device:</b> OnePlus Nord 4 (avalon)
+🍽️ <b>Lunch:</b> <code>${LUNCH_TARGET}</code>
+📦 <b>File:</b> <code>$(basename $ZIP_FILE)</code>
+💾 <b>Size:</b> ${ZIP_SIZE}
+🔑 <b>MD5:</b> <code>${MD5}</code>
+⏱️ <b>Build Time:</b> $(elapsed)
 
-    [ -f "$ERROR_LOG" ] && ERR_LINK=$(gofile_upload "$ERROR_LOG")
-    [ -f "$BUILD_LOG" ] && BUILD_LINK=$(gofile_upload "$BUILD_LOG")
-
-    HEADER_MSG="✧ Build failed ✧
-🧩 ${DEVICE} | ${BUILD_VARIANT} | ${ANDROID_VERSION}
-"
-
-    LOG_MSG=""
-
-    [ -n "$ERR_LINK" ] && LOG_MSG="${LOG_MSG}
-⋄ [Error Log](${ERR_LINK})"
-
-    [ -n "$BUILD_LINK" ] && LOG_MSG="${LOG_MSG}
-⋄ [Build Log](${BUILD_LINK})"
-
-    if [ -n "$LOG_MSG" ]; then
-        LOG_MSG="╭─ 📜 LOGS${LOG_MSG}"
+🔗 <b>Download:</b> ${DOWNLOAD_URL}"
     fi
 
-    tg_upload "${HEADER_MSG}${LOG_MSG}"
-
-    tg_send "💥 *Compilation failed, check build logs*"
-
-    exit 1
-}
-
-# ================= BUILD =================
-echo ">>>> [STEP] Clean"
-rm -rf .repo/local_manifests \
-       vendor/avalon-priv \
-       out/
-
-echo ">>>> [STEP] Repo Init"
-repo init --no-repo-verify -u https://github.com/AviumUI/android_manifests -b avium-16.2 --git-lfs
-
-echo ">>>> [STEP] Local Manifests"
-git clone https://github.com/SathiyaSenpai/local_manifests --depth 1 -b avium-ui .repo/local_manifests
-
-echo ">>>> [STEP] Repo Sync"
-if [ -f /opt/crave/resync.sh ]; then
-    /opt/crave/resync.sh
 else
-    repo sync -c --force-sync --no-tags --no-clone-bundle -j$(nproc --all)
+    echo "[!] Build FAILED with exit code $BUILD_STATUS"
+    tg_send "❌ <b>${LOG_TAG} — BUILD FAILED</b>
+
+<b>Exit Code:</b> <code>${BUILD_STATUS}</code>
+⏱️ <b>Elapsed:</b> $(elapsed)
+
+Check Crave logs at: https://foss.crave.io"
+    exit $BUILD_STATUS
 fi
 
-echo ">>>> [STEP] Clone signing keys (avalon-priv)"
-git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/avalon-priv --depth 1 vendor/avalon-priv
-git clone https://${GITHUB_PAT}@github.com/SathiyaSenpai/lineage-priv --depth 1 vendor/lineage-priv
-
-# ================= FIX BUILD-MANIFEST =================
-
-echo ">>>> [STEP] Export info & Build"
-. build/envsetup.sh
-lunch lineage_avalon-bp4a-userdebug
-export BUILD_USERNAME=SathiyaSenpai
-export BUILD_HOSTNAME=crave
-
-# ================= BUILD START =================
-tg_send_photo "https://raw.githubusercontent.com/SathiyaSenpai/build_file/avium/assets/header.png" "🌙 *${ROM_NAME}* buildbot triggered
-🧩 *${DEVICE}* | *${ANDROID_VERSION}* | *${PROJECT_VERSION}*
-🧪 Type: *${BUILD_VARIANT}*
-🌏 _$(date +"%d %b %Y %I:%M %p IST")_"
-
-# ================= BUILD RUN =================
-set -o pipefail
-m bacon 2>&1 | tee "$BUILD_LOG"
-
-if [ "${PIPESTATUS[0]}" -ne 0 ]; then
-    on_fail
-fi
-
-if grep -q -E "ninja failed|failed to build some targets" "$BUILD_LOG"; then
-    on_fail
-fi
-
-# ================= SUCCESS =================
-END_TIME=$(date +%s)
-DUR=$((END_TIME - START_TIME))
-
-ROM_ZIP=$(ls -t ${OUT_DIR}/*.zip 2>/dev/null | head -n 1)
-
-if [ -n "$ROM_ZIP" ]; then
-    BUILD_ID=$(basename "$ROM_ZIP" .zip)
-    ROM_SIZE=$(du -h "$ROM_ZIP" | awk '{print $1}')
-
-    tg_send "✧ *Buildbot finished its job* ✧
-🆔: \`${BUILD_ID}\`
-🪶 Build Size: *${ROM_SIZE}*
-🧑‍💻 \`${MAINTAINER}\`
-⏳ _Compilation took $((DUR/3600))h $(((DUR%3600)/60))min_"
-
-    tg_send "🌙 _Uploading artifacts…_"
-fi
-
-# ================= UPLOAD =================
-echo ">>>> [STEP] Upload Artifacts"
-
-HEADER_MSG="✧ ${ROM_NAME} Artifacts ✧
-────────────────
-🧩 ${DEVICE} | ${BUILD_VARIANT} | ${ANDROID_VERSION}
-🆔: \`${BUILD_ID}\`
-"
-
-UPLOAD_MSG=""
-IMG_MSG=""
-
-# ROM
-if [ -n "$ROM_ZIP" ]; then
-    GO_URL=$(gofile_upload "$ROM_ZIP")
-
-    UPLOAD_MSG="${UPLOAD_MSG}
-╭─ 📦 ROM
-⋄ [GoFile](${GO_URL})
-"
-fi
-
-# IMAGES
-for IMG in boot.img vendor_boot.img init_boot.img super_empty.img recovery.img; do
-    FILE="${OUT_DIR}/${IMG}"
-
-    if [ -f "$FILE" ]; then
-        GO_URL=$(gofile_upload "$FILE")
-
-        IMG_MSG="${IMG_MSG}
-⋄ [${IMG}](${GO_URL})"
-    fi
-done
-
-# OTA
-OTA_JSON="${OUT_DIR}/${DEVICE}.json"
-
-if [ -f "$OTA_JSON" ]; then
-    GO_URL=$(gofile_upload "$OTA_JSON")
-
-    IMG_MSG="${IMG_MSG}
-
-╭─ 📜 OTA
-⋄ [OTA JSON](${GO_URL})"
-fi
-
-if [ -n "$IMG_MSG" ]; then
-    IMG_MSG="╭─ 🧩 IMAGES${IMG_MSG}"
-fi
-
-FINAL_MESSAGE="${HEADER_MSG}${UPLOAD_MSG}${IMG_MSG}"
-
-tg_upload "$FINAL_MESSAGE"
-tg_send "🌙 _Artifacts released_"
+echo "Done! Elapsed: $(elapsed)"
