@@ -6,7 +6,7 @@ set -e
 TG_BOT_TOKEN="8640370988:AAE0hHei8sUaW0NtZzRLtrXTHk3hpNc9S74"
 TG_CHAT_ID="-1003917803238"
 ROM_MANIFEST="https://github.com/Lunaris-AOSP/android"
-ROM_BRANCH="lineage-23.2"
+ROM_BRANCH="16.2"
 LUNCH_TARGET="lineage_avalon-bp4a-user" 
 BUILD_CMD="m bacon"
 DEVICE="avalon"
