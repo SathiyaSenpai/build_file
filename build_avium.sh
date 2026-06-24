@@ -70,7 +70,7 @@ tg_send "🔨 <b>${LOG_TAG}</b>
 <b>Time:</b> $(date '+%Y-%m-%d %H:%M:%S UTC')"
 
 echo "════════════════════════════════════"
-echo "  AviumUI Build — OnePlus Nord 4"
+echo "  Luna Build — OnePlus Nord 4"
 echo "════════════════════════════════════"
 
 # repo init
@@ -137,11 +137,10 @@ LOCALMANIFEST
 
 echo "[*] Local manifest written."
 
-# ─── Step 4: repo sync ────────────────────────────────────────
+# Step 4: repo sync
 echo "[*] Syncing sources..."
 tg_send "🔄 <b>${LOG_TAG}</b>
 <b>Status:</b> Syncing sources..."
-
 
 /opt/crave/resync.sh 2>&1
 
@@ -149,7 +148,7 @@ echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
 <b>Status:</b> Sync done, starting compilation..."
 
-# ─── Step 5: Build ────────────────────────────────────────────
+# Step 5: Build
 echo "[*] Setting up build environment..."
 source build/envsetup.sh
 
@@ -161,16 +160,21 @@ ${BUILD_CMD} 2>&1
 
 BUILD_STATUS=$?
 
-# ─── Step 6: Upload & Notify ──────────────────────────────────
+# Step 6: Upload & Notify
 if [ $BUILD_STATUS -eq 0 ]; then
-    echo "[*] Build succeeded! Looking for output zip..."
+    echo "[*] Build succeeded! Looking for output files..."
 
-    # Find the output zip (OTA package)
     OUT_DIR="out/target/product/${DEVICE}"
-    ZIP_FILE=$(find "${OUT_DIR}" -maxdepth 1 -name "lineage-*.zip" -o \
-                                              -name "avium-*.zip" -o \
-                                              -name "*${DEVICE}*.zip" \
+
+    # Find ZIP (fixed with proper parentheses)
+    ZIP_FILE=$(find "${OUT_DIR}" -maxdepth 1 \( -name "Lunaris-*.zip" -o -name "*${DEVICE}*.zip" \) \
                2>/dev/null | grep -v "ota_update" | head -1)
+
+    # Find boot/recovery/vendor_boot images
+    BOOT_IMG="${OUT_DIR}/boot.img"
+    RECOVERY_IMG="${OUT_DIR}/recovery.img"
+    VENDOR_BOOT_IMG="${OUT_DIR}/vendor_boot.img"
+    DTBO_IMG="${OUT_DIR}/dtbo.img"
 
     if [ -z "$ZIP_FILE" ]; then
         echo "[!] Could not find output ZIP in ${OUT_DIR}"
@@ -181,7 +185,7 @@ Elapsed: $(elapsed)"
     fi
 
     ZIP_SIZE=$(du -sh "$ZIP_FILE" | cut -f1)
-    echo "[*] Found: $ZIP_FILE (${ZIP_SIZE})"
+    echo "[*] Found ZIP: $ZIP_FILE (${ZIP_SIZE})"
 
     tg_send "📦 <b>${LOG_TAG}</b>
 <b>Status:</b> Build done! Uploading to GoFile...
@@ -189,23 +193,37 @@ Elapsed: $(elapsed)"
 <b>Size:</b> ${ZIP_SIZE}
 <b>Elapsed:</b> $(elapsed)"
 
-    # Upload to GoFile
+    # Upload ZIP
     DOWNLOAD_URL=$(gofile_upload "$ZIP_FILE" | tail -1)
+
+    # Upload images if they exist
+    IMG_LINKS=""
+    for IMG in "$BOOT_IMG" "$RECOVERY_IMG" "$VENDOR_BOOT_IMG" "$DTBO_IMG"; do
+        if [ -f "$IMG" ]; then
+            IMG_NAME=$(basename "$IMG")
+            echo "[*] Uploading $IMG_NAME..."
+            IMG_URL=$(gofile_upload "$IMG" | tail -1)
+            if [[ "$IMG_URL" == http* ]]; then
+                IMG_LINKS="${IMG_LINKS}📎 <b>${IMG_NAME}:</b> ${IMG_URL}\n"
+                echo "[*] $IMG_NAME uploaded: $IMG_URL"
+            fi
+        fi
+    done
+
+    # MD5
+    MD5_FILE="${ZIP_FILE}.md5sum"
+    MD5=""
+    if [ -f "$MD5_FILE" ]; then
+        MD5=$(cat "$MD5_FILE" | awk '{print $1}')
+    else
+        MD5=$(md5sum "$ZIP_FILE" | awk '{print $1}')
+    fi
 
     if [ -z "$DOWNLOAD_URL" ] || [[ "$DOWNLOAD_URL" != http* ]]; then
         tg_send "⚠️ <b>${LOG_TAG}</b>
-Build succeeded but GoFile upload failed.
+Build succeeded but GoFile ZIP upload failed.
 <b>File:</b> <code>$(basename $ZIP_FILE)</code>"
     else
-        # Also find md5 if exists
-        MD5_FILE="${ZIP_FILE}.md5sum"
-        MD5=""
-        if [ -f "$MD5_FILE" ]; then
-            MD5=$(cat "$MD5_FILE" | awk '{print $1}')
-        else
-            MD5=$(md5sum "$ZIP_FILE" | awk '{print $1}')
-        fi
-
         tg_send "✅ <b>${LOG_TAG} — BUILD COMPLETE</b>
 
 📱 <b>Device:</b> OnePlus Nord 4 (avalon)
@@ -215,7 +233,9 @@ Build succeeded but GoFile upload failed.
 🔑 <b>MD5:</b> <code>${MD5}</code>
 ⏱️ <b>Build Time:</b> $(elapsed)
 
-🔗 <b>Download:</b> ${DOWNLOAD_URL}"
+🔗 <b>Download (ZIP):</b> ${DOWNLOAD_URL}
+
+${IMG_LINKS}"
     fi
 
 else
