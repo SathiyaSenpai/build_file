@@ -142,8 +142,8 @@ echo "[*] Syncing sources..."
 tg_send "🔄 <b>${LOG_TAG}</b>
 <b>Status:</b> Syncing sources..."
 
-repo sync -c --no-clone-bundle --no-tags --optimized-fetch \
-    --force-sync -j$(nproc --all) 2>&1
+
+/opt/crave/resync.sh 2>&1
 
 echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
