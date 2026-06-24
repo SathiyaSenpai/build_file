@@ -3,7 +3,7 @@
 set -e
 
 # CONFIG
-TG_BOT_TOKEN="8640370988:AAGXrskkxQYom0H0loYQsD7jh-EaVvcIxZw"
+TG_BOT_TOKEN="8640370988:AAElop4kbmgYQbnkML4B97rG4Fd-yxfl8mA"
 TG_CHAT_ID="-1003917803238"
 ROM_MANIFEST="https://github.com/Lunaris-AOSP/android"
 ROM_BRANCH="16.2"
