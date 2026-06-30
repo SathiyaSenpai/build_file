@@ -5,14 +5,17 @@ set -e
 # CONFIG
 TG_BOT_TOKEN="8640370988:AAElop4kbmgYQbnkML4B97rG4Fd-yxfl8mA"
 TG_CHAT_ID="-1003917803238"
-ROM_MANIFEST="https://github.com/Lunaris-AOSP/android"
-ROM_BRANCH="16.2"
-LUNCH_TARGET="lineage_avalon-bp4a-user" 
-BUILD_CMD="m bacon"
+LUNCH_TARGET="lineage_avalon-bp4a-user"
 DEVICE="avalon"
+VARIANT=${1:-VANILLA}
 
 START_TIME=$(date +%s)
-LOG_TAG="Lunaris | avalon"
+LOG_TAG="Lunaris | avalon | ${VARIANT}"
+
+if [ "$VARIANT" == "GMS" ]; then
+    export WITH_GMS=true
+fi
+BUILD_CMD="m bacon"
 
 # Telegram
 tg_send() {
@@ -20,16 +23,6 @@ tg_send() {
         -d chat_id="${TG_CHAT_ID}" \
         -d parse_mode="HTML" \
         -d text="$1" > /dev/null
-}
-
-tg_send_file() {
-    local FILE="$1"
-    local CAPTION="$2"
-    curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendDocument" \
-        -F chat_id="${TG_CHAT_ID}" \
-        -F document=@"$FILE" \
-        -F caption="$CAPTION" \
-        -F parse_mode="HTML" > /dev/null
 }
 
 elapsed() {
@@ -42,42 +35,38 @@ gofile_upload() {
     local FILE_PATH="$1"
     local FILENAME=$(basename "$FILE_PATH")
 
-    echo "[*] Fetching best GoFile server..."
+    echo "[*] Fetching best GoFile server..." >&2
     local SERVER=$(curl -s "https://api.gofile.io/servers" \
-        | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['servers'][0]['name'])")
+        | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['servers'][0]['name'], end='')")
 
     if [ -z "$SERVER" ]; then
-        echo "[!] Could not get GoFile server, falling back to store1"
+        echo "[!] Could not get GoFile server, falling back to store1" >&2
         SERVER="store1"
     fi
 
-    echo "[*] Uploading $FILENAME to GoFile server: $SERVER"
+    echo "[*] Uploading $FILENAME to GoFile server: $SERVER" >&2
     local UPLOAD_RESPONSE=$(curl -s \
         -F "file=@${FILE_PATH}" \
         "https://${SERVER}.gofile.io/contents/uploadfile")
 
-    echo "$UPLOAD_RESPONSE"
-    local DOWNLOAD_URL=$(echo "$UPLOAD_RESPONSE" \
-        | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['downloadPage'])" 2>/dev/null)
+    echo "[*] GoFile response: $UPLOAD_RESPONSE" >&2
 
-    echo "$DOWNLOAD_URL"
+    echo "$UPLOAD_RESPONSE" \
+        | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['downloadPage'], end='')" 2>/dev/null
 }
 
 # Notify build started
 tg_send "🔨 <b>${LOG_TAG}</b>
 <b>Status:</b> Build started
+<b>Variant:</b> <code>${VARIANT}</code>
 <b>Target:</b> <code>${LUNCH_TARGET}</code>
 <b>Time:</b> $(date '+%Y-%m-%d %H:%M:%S UTC')"
 
 echo "════════════════════════════════════"
-echo "  Luna Build — OnePlus Nord 4"
+echo "  Lunaris Build — OnePlus Nord 4 [${VARIANT}]"
 echo "════════════════════════════════════"
 
-# repo init
-echo "[*] Initializing repo..."
-repo init -u "${ROM_MANIFEST}" -b "${ROM_BRANCH}" --git-lfs --depth=1 2>&1
-
-# Clone device trees via local manifest
+# Local manifest
 echo "[*] Setting up local manifests..."
 mkdir -p .repo/local_manifests
 
@@ -137,7 +126,7 @@ LOCALMANIFEST
 
 echo "[*] Local manifest written."
 
-# Step 4: repo sync
+# Sync
 echo "[*] Syncing sources..."
 tg_send "🔄 <b>${LOG_TAG}</b>
 <b>Status:</b> Syncing sources..."
@@ -148,36 +137,33 @@ echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
 <b>Status:</b> Sync done, starting compilation..."
 
-# Step 5: Build
+# Build
 echo "[*] Setting up build environment..."
 source build/envsetup.sh
 
 echo "[*] Lunching target: ${LUNCH_TARGET}"
 lunch "${LUNCH_TARGET}"
 
-echo "[*] Building..."
+echo "[*] Building ${VARIANT}..."
 ${BUILD_CMD} 2>&1
 
 BUILD_STATUS=$?
 
-# Step 6: Upload & Notify
+# Upload & Notify
 if [ $BUILD_STATUS -eq 0 ]; then
     echo "[*] Build succeeded! Looking for output files..."
 
     OUT_DIR="out/target/product/${DEVICE}"
 
-    # Find ZIP (fixed with proper parentheses)
     ZIP_FILE=$(find "${OUT_DIR}" -maxdepth 1 \( -name "Lunaris-*.zip" -o -name "*${DEVICE}*.zip" \) \
                2>/dev/null | grep -v "ota_update" | head -1)
 
-    # Find boot/recovery/vendor_boot images
     BOOT_IMG="${OUT_DIR}/boot.img"
     RECOVERY_IMG="${OUT_DIR}/recovery.img"
     VENDOR_BOOT_IMG="${OUT_DIR}/vendor_boot.img"
     DTBO_IMG="${OUT_DIR}/dtbo.img"
 
     if [ -z "$ZIP_FILE" ]; then
-        echo "[!] Could not find output ZIP in ${OUT_DIR}"
         tg_send "⚠️ <b>${LOG_TAG}</b>
 Build succeeded but ZIP not found in <code>${OUT_DIR}</code>
 Elapsed: $(elapsed)"
@@ -194,15 +180,15 @@ Elapsed: $(elapsed)"
 <b>Elapsed:</b> $(elapsed)"
 
     # Upload ZIP
-    DOWNLOAD_URL=$(gofile_upload "$ZIP_FILE" | tail -1)
+    DOWNLOAD_URL=$(gofile_upload "$ZIP_FILE")
 
-    # Upload images if they exist
+    # Upload images
     IMG_LINKS=""
     for IMG in "$BOOT_IMG" "$RECOVERY_IMG" "$VENDOR_BOOT_IMG" "$DTBO_IMG"; do
         if [ -f "$IMG" ]; then
             IMG_NAME=$(basename "$IMG")
             echo "[*] Uploading $IMG_NAME..."
-            IMG_URL=$(gofile_upload "$IMG" | tail -1)
+            IMG_URL=$(gofile_upload "$IMG")
             if [[ "$IMG_URL" == http* ]]; then
                 IMG_LINKS="${IMG_LINKS}📎 <b>${IMG_NAME}:</b> ${IMG_URL}\n"
                 echo "[*] $IMG_NAME uploaded: $IMG_URL"
@@ -212,7 +198,6 @@ Elapsed: $(elapsed)"
 
     # MD5
     MD5_FILE="${ZIP_FILE}.md5sum"
-    MD5=""
     if [ -f "$MD5_FILE" ]; then
         MD5=$(cat "$MD5_FILE" | awk '{print $1}')
     else
@@ -227,6 +212,7 @@ Build succeeded but GoFile ZIP upload failed.
         tg_send "✅ <b>${LOG_TAG} — BUILD COMPLETE</b>
 
 📱 <b>Device:</b> OnePlus Nord 4 (avalon)
+🏷️ <b>Variant:</b> <code>${VARIANT}</code>
 🍽️ <b>Lunch:</b> <code>${LUNCH_TARGET}</code>
 📦 <b>File:</b> <code>$(basename $ZIP_FILE)</code>
 💾 <b>Size:</b> ${ZIP_SIZE}
@@ -239,9 +225,9 @@ ${IMG_LINKS}"
     fi
 
 else
-    echo "[!] Build FAILED with exit code $BUILD_STATUS"
     tg_send "❌ <b>${LOG_TAG} — BUILD FAILED</b>
 
+<b>Variant:</b> <code>${VARIANT}</code>
 <b>Exit Code:</b> <code>${BUILD_STATUS}</code>
 ⏱️ <b>Elapsed:</b> $(elapsed)
 
