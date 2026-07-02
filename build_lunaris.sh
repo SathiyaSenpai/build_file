@@ -121,6 +121,10 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
            path="vendor/lineage-priv"
            remote="sathiya"
            revision="main" />
+  <project name="vendor_lineage"
+           path="vendor/lineage"
+           remote="sathiya"
+           revision="main" />
 </manifest>
 LOCALMANIFEST
 
