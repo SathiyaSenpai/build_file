@@ -123,6 +123,10 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
            path="vendor/lineage-priv"
            remote="sathiya"
            revision="main" />
+  <project name="android_vendor_lineage"
+           path="vendor/lineage"
+           remote="sathiya"
+           revision="avium-16.2" />
 </manifest>
 LOCALMANIFEST
 
