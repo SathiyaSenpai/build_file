@@ -108,7 +108,7 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
   <project name="android_hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
-           revision="lineage-23.2" />
+           revision="16.0" />
   <project name="android_hardware_dolby_interfaces"
            path="hardware/dolby/interfaces"
            remote="lineage"
