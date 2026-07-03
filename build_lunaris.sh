@@ -3,7 +3,7 @@
 set -e
 
 # CONFIG
-TG_BOT_TOKEN="8640370988:AAEiYvxOVSNXNLyWzqTxzYD_IW5qUhRvyY8"
+TG_BOT_TOKEN="8640370988:AAElop4kbmgYQbnkML4B97rG4Fd-yxfl8mA"
 TG_CHAT_ID="-1003917803238"
 LUNCH_TARGET="lineage_avalon-bp4a-user"
 DEVICE="avalon"
@@ -17,7 +17,6 @@ if [ "$VARIANT" == "GMS" ]; then
 fi
 BUILD_CMD="m bacon"
 
-# Telegram
 tg_send() {
     curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
         -d chat_id="${TG_CHAT_ID}" \
@@ -30,32 +29,25 @@ elapsed() {
     printf '%dh %dm %ds' $(( ELAPSED/3600 )) $(( (ELAPSED%3600)/60 )) $(( ELAPSED%60 ))
 }
 
-# GoFile upload
 gofile_upload() {
     local FILE_PATH="$1"
     local FILENAME=$(basename "$FILE_PATH")
-
     echo "[*] Fetching best GoFile server..." >&2
     local SERVER=$(curl -s "https://api.gofile.io/servers" \
         | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['servers'][0]['name'], end='')")
-
     if [ -z "$SERVER" ]; then
-        echo "[!] Could not get GoFile server, falling back to store1" >&2
+        echo "[!] Falling back to store1" >&2
         SERVER="store1"
     fi
-
-    echo "[*] Uploading $FILENAME to GoFile server: $SERVER" >&2
+    echo "[*] Uploading $FILENAME to $SERVER..." >&2
     local UPLOAD_RESPONSE=$(curl -s \
         -F "file=@${FILE_PATH}" \
         "https://${SERVER}.gofile.io/contents/uploadfile")
-
     echo "[*] GoFile response: $UPLOAD_RESPONSE" >&2
-
     echo "$UPLOAD_RESPONSE" \
         | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['downloadPage'], end='')" 2>/dev/null
 }
 
-# Notify build started
 tg_send "🔨 <b>${LOG_TAG}</b>
 <b>Status:</b> Build started
 <b>Variant:</b> <code>${VARIANT}</code>
@@ -70,7 +62,7 @@ echo "════════════════════════�
 echo "[*] Setting up local manifests..."
 mkdir -p .repo/local_manifests
 
-cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
+cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
   <remote name="sathiya"
@@ -108,7 +100,7 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
   <project name="android_hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
-           revision="16.0" />
+           revision="lineage-23.2" />
   <project name="android_hardware_dolby_interfaces"
            path="hardware/dolby/interfaces"
            remote="lineage"
@@ -121,19 +113,15 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
            path="vendor/lineage-priv"
            remote="sathiya"
            revision="main" />
-
-  <remove-project name="LineageOS/android_vendor_lineage" />
-
-  <project name="vendor_lineage"
-           path="vendor/lineage"
-           remote="sathiya"
-           revision="16.2" />
 </manifest>
 LOCALMANIFEST
 
 echo "[*] Local manifest written."
 
-# Sync
+# Repo init + Sync
+echo "[*] Initializing repo..."
+repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
+
 echo "[*] Syncing sources..."
 tg_send "🔄 <b>${LOG_TAG}</b>
 <b>Status:</b> Syncing sources..."
@@ -156,10 +144,7 @@ ${BUILD_CMD} 2>&1
 
 BUILD_STATUS=$?
 
-# Upload & Notify
 if [ $BUILD_STATUS -eq 0 ]; then
-    echo "[*] Build succeeded! Looking for output files..."
-
     OUT_DIR="out/target/product/${DEVICE}"
 
     ZIP_FILE=$(find "${OUT_DIR}" -maxdepth 1 \( -name "Lunaris-*.zip" -o -name "*${DEVICE}*.zip" \) \
@@ -178,32 +163,26 @@ Elapsed: $(elapsed)"
     fi
 
     ZIP_SIZE=$(du -sh "$ZIP_FILE" | cut -f1)
-    echo "[*] Found ZIP: $ZIP_FILE (${ZIP_SIZE})"
 
     tg_send "📦 <b>${LOG_TAG}</b>
-<b>Status:</b> Build done! Uploading to GoFile...
+<b>Status:</b> Uploading to GoFile...
 <b>File:</b> <code>$(basename $ZIP_FILE)</code>
 <b>Size:</b> ${ZIP_SIZE}
 <b>Elapsed:</b> $(elapsed)"
 
-    # Upload ZIP
     DOWNLOAD_URL=$(gofile_upload "$ZIP_FILE")
 
-    # Upload images
     IMG_LINKS=""
     for IMG in "$BOOT_IMG" "$RECOVERY_IMG" "$VENDOR_BOOT_IMG" "$DTBO_IMG"; do
         if [ -f "$IMG" ]; then
             IMG_NAME=$(basename "$IMG")
-            echo "[*] Uploading $IMG_NAME..."
             IMG_URL=$(gofile_upload "$IMG")
             if [[ "$IMG_URL" == http* ]]; then
                 IMG_LINKS="${IMG_LINKS}📎 <b>${IMG_NAME}:</b> ${IMG_URL}\n"
-                echo "[*] $IMG_NAME uploaded: $IMG_URL"
             fi
         fi
     done
 
-    # MD5
     MD5_FILE="${ZIP_FILE}.md5sum"
     if [ -f "$MD5_FILE" ]; then
         MD5=$(cat "$MD5_FILE" | awk '{print $1}')
@@ -213,7 +192,7 @@ Elapsed: $(elapsed)"
 
     if [ -z "$DOWNLOAD_URL" ] || [[ "$DOWNLOAD_URL" != http* ]]; then
         tg_send "⚠️ <b>${LOG_TAG}</b>
-Build succeeded but GoFile ZIP upload failed.
+Build succeeded but GoFile upload failed.
 <b>File:</b> <code>$(basename $ZIP_FILE)</code>"
     else
         tg_send "✅ <b>${LOG_TAG} — BUILD COMPLETE</b>
