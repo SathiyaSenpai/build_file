@@ -121,6 +121,9 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
            path="vendor/lineage-priv"
            remote="sathiya"
            revision="main" />
+
+  <remove-project name="LineageOS/android_vendor_lineage" />
+
   <project name="vendor_lineage"
            path="vendor/lineage"
            remote="sathiya"
