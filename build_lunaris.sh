@@ -142,6 +142,12 @@ echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
 <b>Status:</b> Sync done, starting compilation..."
 
+rm -rf hardware/qcom-caf/common/libqti-perfd-client/Android.bp
+rm -rf hardware/qcom-caf/sm8450-6.6
+rm -rf hardware/qcom-caf/sm8750
+rm -rf hardware/qcom-caf/sm8550
+
+
 # Build
 echo "[*] Setting up build environment..."
 source build/envsetup.sh
