@@ -113,6 +113,7 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            path="vendor/lineage-priv"
            remote="sathiya"
            revision="main" />
+           
   <project name="vendor_lineage"
            path="vendor/lineage"
            remote="sathiya"
