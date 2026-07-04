@@ -113,13 +113,13 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            path="vendor/lineage-priv"
            remote="sathiya"
            revision="main" />
+  <project name="vendor_lineage"
+           path="vendor/lineage"
+           remote="sathiya"
+           revision="16.2" />
 </manifest>
 LOCALMANIFEST
 
-echo "[*] Local manifest written."
-
-# Repo init + Sync
-echo "[*] Initializing repo..."
 repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
 
 echo "[*] Syncing sources..."
