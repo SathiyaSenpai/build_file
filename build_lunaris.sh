@@ -114,10 +114,18 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            remote="sathiya"
            revision="main" />
            
-  <project name="vendor_lineage"
-           path="vendor/lineage"
-           remote="sathiya"
-           revision="16.2" />
+  <remove-project name="Lunaris-AOSP/vendor_lineage" />
+  <remove-project name="Lunaris-AOSP/frameworks_base" />
+
+  <project name="SathiyaSenpai/vendor_lineage" 
+           path="vendor/lineage" 
+           remote="sathiya" 
+           revision="16.2" 
+           clone-depth="1" />
+  <project name="SathiyaSenpai/frameworks_base" 
+           path="frameworks/base" remote="github" 
+           revision="16.2" 
+           clone-depth="1" />
 </manifest>
 LOCALMANIFEST
 
