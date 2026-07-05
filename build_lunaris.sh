@@ -71,6 +71,8 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/LineageOS" />
   <remote name="avalon-stuffs"
           fetch="https://github.com/avalon-stuffs" />
+  <remote name="TheMuppets"
+          fetch="https://github.com/TheMuppets" />
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
            remote="sathiya"
@@ -93,11 +95,11 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
-           remote="sathiya"
+           remote="TheMuppets"
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
-           remote="sathiya"
+           remote="TheMuppets"
            revision="lineage-23.2" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
@@ -136,7 +138,7 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
 </manifest>
 LOCALMANIFEST
 
-repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
+repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs
 
 echo "[*] Syncing sources..."
 tg_send "🔄 <b>${LOG_TAG}</b>
