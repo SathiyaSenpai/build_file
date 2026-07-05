@@ -111,6 +111,10 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            path="vendor/sony/dolby"
            remote="avalon-stuffs"
            revision="16" />
+  <project name="proprietary_vendor_oneplus_ir"
+           path="vendor/oneplus/ir"
+           remote="avalon-stuffs"
+           revision="16" />
   <project name="lineage-priv"
            path="vendor/lineage-priv"
            remote="sathiya"
