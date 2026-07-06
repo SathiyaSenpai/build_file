@@ -104,7 +104,7 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
   <project name="android_hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
-           revision="16.0" />
+           revision="lineage-23.2" />
   <project name="android_packages_apps_LunarisDolby"
            path="packages/apps/LunarisDolby"
            remote="avalon-stuffs"
