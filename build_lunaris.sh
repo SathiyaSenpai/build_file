@@ -150,11 +150,15 @@ echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
 <b>Status:</b> Sync done, starting compilation..."
 
-rm -rf hardware/qcom-caf/common/libqti-perfd-client/Android.bp
-rm -rf hardware/qcom-caf/sm8450-6.6
-rm -rf hardware/qcom-caf/sm8750
-rm -rf hardware/qcom-caf/sm8550
-
+# Patch known build issues
+echo "[*] Patching duplicate vibrator init_rc target..."
+VIBRATOR_BP="vendor/qcom/opensource/vibrator/aidl/Android.bp"
+if [ -f "$VIBRATOR_BP" ]; then
+    sed -i 's/^\(\s*\)init_rc: \["vendor.qti.hardware.vibrator.service.rc"\],/\1\/\/ init_rc: ["vendor.qti.hardware.vibrator.service.rc"],/' "$VIBRATOR_BP"
+    echo "[*] Patched $VIBRATOR_BP"
+else
+    echo "[!] $VIBRATOR_BP not found, skipping vibrator patch"
+fi
 
 # Build
 echo "[*] Setting up build environment..."
