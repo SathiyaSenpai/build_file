@@ -138,7 +138,7 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
 </manifest>
 LOCALMANIFEST
 
-repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs
+repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
 
 echo "[*] Syncing sources..."
 tg_send "🔄 <b>${LOG_TAG}</b>
