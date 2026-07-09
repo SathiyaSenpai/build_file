@@ -106,7 +106,7 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            remote="sathiya"
            revision="lineage-23.2" />
   <project name="android_packages_apps_LunarisDolby"
-           path="packages/apps/LunarisDolby"
+           path="packages/apps"
            remote="avalon-stuffs"
            revision="16" />
   <project name="proprietary_vendor_sony_dolby"
