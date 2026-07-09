@@ -8,14 +8,11 @@ TG_CHAT_ID="-1003917803238"
 LUNCH_TARGET="lineage_avalon-bp4a-user"
 DEVICE="avalon"
 
-# Normalize variant to uppercase so "gms" / "Gms" / "GMS" all work the same
 VARIANT=$(echo "${1:-VANILLA}" | tr '[:lower:]' '[:upper:]')
 
 START_TIME=$(date +%s)
 LOG_TAG="Lunaris | avalon | ${VARIANT}"
 
-# Explicitly set/unset WITH_GMS on every branch so a stale value can't leak
-# in from a previous run in the same shell session (this was the bug).
 unset WITH_GMS
 case "$VARIANT" in
     GMS)
