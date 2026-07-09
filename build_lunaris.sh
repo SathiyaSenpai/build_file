@@ -7,14 +7,28 @@ TG_BOT_TOKEN="8640370988:AAEiYvxOVSNXNLyWzqTxzYD_IW5qUhRvyY8"
 TG_CHAT_ID="-1003917803238"
 LUNCH_TARGET="lineage_avalon-bp4a-user"
 DEVICE="avalon"
-VARIANT=${1:-VANILLA}
+
+# Normalize variant to uppercase so "gms" / "Gms" / "GMS" all work the same
+VARIANT=$(echo "${1:-VANILLA}" | tr '[:lower:]' '[:upper:]')
 
 START_TIME=$(date +%s)
 LOG_TAG="Lunaris | avalon | ${VARIANT}"
 
-if [ "$VARIANT" == "GMS" ]; then
-    export WITH_GMS=true
-fi
+# Explicitly set/unset WITH_GMS on every branch so a stale value can't leak
+# in from a previous run in the same shell session (this was the bug).
+unset WITH_GMS
+case "$VARIANT" in
+    GMS)
+        export WITH_GMS=true
+        ;;
+    VANILLA)
+        export WITH_GMS=false
+        ;;
+    *)
+        echo "[!] Invalid variant '${1}'. Use 'VANILLA' or 'GMS'."
+        exit 1
+        ;;
+esac
 BUILD_CMD="m bacon"
 
 tg_send() {
