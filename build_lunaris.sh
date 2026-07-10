@@ -132,9 +132,10 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            path="vendor/lineage-priv"
            remote="sathiya"
            revision="main" />
-           
+
   <remove-project name="Lunaris-AOSP/vendor_lineage" />
   <remove-project name="Lunaris-AOSP/frameworks_base" />
+  <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
 
   <project name="vendor_lineage" 
            path="vendor/lineage" 
@@ -160,10 +161,6 @@ tg_send "🔄 <b>${LOG_TAG}</b>
 echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
 <b>Status:</b> Sync done, starting compilation..."
-
-# Patch
-rm -rf vendor/qcom/opensource/vibrator
-
 
 # Build
 echo "[*] Setting up build environment..."
