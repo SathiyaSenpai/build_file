@@ -7,14 +7,10 @@ TG_BOT_TOKEN="8640370988:AAEiYvxOVSNXNLyWzqTxzYD_IW5qUhRvyY8"
 TG_CHAT_ID="-1003917803238"
 LUNCH_TARGET="lineage_avalon-bp4a-user"
 DEVICE="avalon"
-VARIANT=${1:-VANILLA}
 
 START_TIME=$(date +%s)
-LOG_TAG="AviumUI | avalon | ${VARIANT}"
+LOG_TAG="AviumUI | avalon"
 
-if [ "$VARIANT" == "GMS" ]; then
-    export WITH_GMS=true
-fi
 BUILD_CMD="m bacon"
 
 tg_send() {
@@ -50,12 +46,11 @@ gofile_upload() {
 
 tg_send "🔨 <b>${LOG_TAG}</b>
 <b>Status:</b> Build started
-<b>Variant:</b> <code>${VARIANT}</code>
 <b>Target:</b> <code>${LUNCH_TARGET}</code>
 <b>Time:</b> $(date '+%Y-%m-%d %H:%M:%S UTC')"
 
 echo "════════════════════════════════════"
-echo "  AviumUI Build — OnePlus Nord 4 [${VARIANT}]"
+echo "  AviumUI Build — OnePlus Nord 4"
 echo "════════════════════════════════════"
 
 # Local manifest
@@ -113,6 +108,10 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
            path="vendor/lineage-priv"
            remote="sathiya"
            revision="main" />
+
+  <remove-project name="AviumUI/android_vendor_lineage" />
+  <remove-project name="AviumUI/android_frameworks_base" />
+  <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
 </manifest>
 LOCALMANIFEST
 
@@ -139,7 +138,7 @@ source build/envsetup.sh
 echo "[*] Lunching target: ${LUNCH_TARGET}"
 lunch "${LUNCH_TARGET}"
 
-echo "[*] Building ${VARIANT}..."
+echo "[*] Building..."
 ${BUILD_CMD} 2>&1
 
 BUILD_STATUS=$?
@@ -198,7 +197,6 @@ Build succeeded but GoFile upload failed.
         tg_send "✅ <b>${LOG_TAG} — BUILD COMPLETE</b>
 
 📱 <b>Device:</b> OnePlus Nord 4 (avalon)
-🏷️ <b>Variant:</b> <code>${VARIANT}</code>
 🍽️ <b>Lunch:</b> <code>${LUNCH_TARGET}</code>
 📦 <b>File:</b> <code>$(basename $ZIP_FILE)</code>
 💾 <b>Size:</b> ${ZIP_SIZE}
@@ -213,7 +211,6 @@ ${IMG_LINKS}"
 else
     tg_send "❌ <b>${LOG_TAG} — BUILD FAILED</b>
 
-<b>Variant:</b> <code>${VARIANT}</code>
 <b>Exit Code:</b> <code>${BUILD_STATUS}</code>
 ⏱️ <b>Elapsed:</b> $(elapsed)
 
