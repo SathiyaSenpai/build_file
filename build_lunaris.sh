@@ -8,24 +8,9 @@ TG_CHAT_ID="-1003917803238"
 LUNCH_TARGET="lineage_avalon-bp4a-user"
 DEVICE="avalon"
 
-VARIANT=$(echo "${1:-VANILLA}" | tr '[:lower:]' '[:upper:]')
-
 START_TIME=$(date +%s)
-LOG_TAG="Lunaris | avalon | ${VARIANT}"
+LOG_TAG="Lunaris | avalon"
 
-unset WITH_GMS
-case "$VARIANT" in
-    GMS)
-        export WITH_GMS=true
-        ;;
-    VANILLA)
-        export WITH_GMS=false
-        ;;
-    *)
-        echo "[!] Invalid variant '${1}'. Use 'VANILLA' or 'GMS'."
-        exit 1
-        ;;
-esac
 BUILD_CMD="m bacon"
 
 tg_send() {
@@ -61,12 +46,11 @@ gofile_upload() {
 
 tg_send "🔨 <b>${LOG_TAG}</b>
 <b>Status:</b> Build started
-<b>Variant:</b> <code>${VARIANT}</code>
 <b>Target:</b> <code>${LUNCH_TARGET}</code>
 <b>Time:</b> $(date '+%Y-%m-%d %H:%M:%S UTC')"
 
 echo "════════════════════════════════════"
-echo "  Lunaris Build — OnePlus Nord 4 [${VARIANT}]"
+echo "  Lunaris Build — OnePlus Nord 4"
 echo "════════════════════════════════════"
 
 # Local manifest
@@ -169,7 +153,7 @@ source build/envsetup.sh
 echo "[*] Lunching target: ${LUNCH_TARGET}"
 lunch "${LUNCH_TARGET}"
 
-echo "[*] Building ${VARIANT}..."
+echo "[*] Building..."
 ${BUILD_CMD} 2>&1
 
 BUILD_STATUS=$?
@@ -228,7 +212,6 @@ Build succeeded but GoFile upload failed.
         tg_send "✅ <b>${LOG_TAG} — BUILD COMPLETE</b>
 
 📱 <b>Device:</b> OnePlus Nord 4 (avalon)
-🏷️ <b>Variant:</b> <code>${VARIANT}</code>
 🍽️ <b>Lunch:</b> <code>${LUNCH_TARGET}</code>
 📦 <b>File:</b> <code>$(basename $ZIP_FILE)</code>
 💾 <b>Size:</b> ${ZIP_SIZE}
@@ -243,7 +226,6 @@ ${IMG_LINKS}"
 else
     tg_send "❌ <b>${LOG_TAG} — BUILD FAILED</b>
 
-<b>Variant:</b> <code>${VARIANT}</code>
 <b>Exit Code:</b> <code>${BUILD_STATUS}</code>
 ⏱️ <b>Elapsed:</b> $(elapsed)
 
