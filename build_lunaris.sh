@@ -117,8 +117,13 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
 
   <remove-project name="Lunaris-AOSP/vendor_lineage" />
   <remove-project name="Lunaris-AOSP/frameworks_base" />
+  <remove-project name="Lunaris-AOSP/packages_apps_Updater" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
 
+  <project name="packages_apps_Updater" 
+           path="packages/apps/Updater" 
+           remote="sathiya" 
+           revision="16.2" />
   <project name="vendor_lineage" 
            path="vendor/lineage" 
            remote="sathiya" 
