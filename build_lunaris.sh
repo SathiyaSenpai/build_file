@@ -89,7 +89,7 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
            remote="sathiya"
-           revision="pong" />
+           revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
            remote="sathiya"
