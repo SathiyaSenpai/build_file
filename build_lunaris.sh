@@ -156,6 +156,8 @@ source build/envsetup.sh
 echo "[*] Lunching target: ${LUNCH_TARGET}"
 lunch "${LUNCH_TARGET}"
 
+m installclean
+
 echo "[*] Building..."
 ${BUILD_CMD} 2>&1
 
