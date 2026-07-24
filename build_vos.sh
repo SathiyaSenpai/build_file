@@ -87,11 +87,11 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
            remote="sathiya"
-           revision="16.2" />
+           revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
            remote="sathiya"
-           revision="16.2" />
+           revision="lineage-23.2" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
@@ -113,7 +113,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="packages_apps_Updater" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
   <remove-project name="vendor_voltage" />
-  <remove-project name="frameworks_base" />
+  <remove-project name="frameworks_base_new" />
 
   <project name="packages_apps_Updater"
            path="packages/apps/Updater"
