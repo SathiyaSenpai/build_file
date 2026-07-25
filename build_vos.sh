@@ -150,9 +150,11 @@ tg_send "✅ <b>${LOG_TAG}</b>
 <b>Status:</b> Sync done, starting compilation..."
 
 echo "[*] Setting up build environment..."
-. build/envsetup.sh
+source build/envsetup.sh
 
 echo "[*] Brunching device: ${DEVICE}"
+
+lunch voltage_avalon-bp4a-user
 
 set +e
 ${BUILD_CMD} 2>&1
