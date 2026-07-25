@@ -133,7 +133,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <project name="lineage-priv"
            path="vendor/voltage-priv"
            remote="sathiya"
-           revision="main" />
+           revision="voltage" />
 </manifest>
 LOCALMANIFEST
 
