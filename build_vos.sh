@@ -95,7 +95,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <project name="android_hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
-           revision="lineage-23.2" />
+           revision="voltage-16.2" />
 
   <project name="android_packages_apps_LunarisDolby"
            path="packages/apps"
