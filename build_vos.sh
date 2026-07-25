@@ -156,7 +156,7 @@ source build/envsetup.sh
 
 echo "[*] Brunching device: ${DEVICE}"
 
-lunch voltage_avalon-bp4a-user
+lunch voltage_avalon-bp4a-userdebug
 
 set +e
 ${BUILD_CMD} 2>&1
