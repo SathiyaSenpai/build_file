@@ -53,6 +53,8 @@ echo "════════════════════════�
 echo "  Lunaris Build — OnePlus Nord 4"
 echo "════════════════════════════════════"
 
+rm -rf .repo/local_manifests/
+
 # Local manifest
 echo "[*] Setting up local manifests..."
 mkdir -p .repo/local_manifests
