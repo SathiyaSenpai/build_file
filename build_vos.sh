@@ -9,13 +9,13 @@ DEVICE="avalon"
 START_TIME=$(date +%s)
 LOG_TAG="Voltage | avalon"
 
-BUILD_CMD="brunch ${DEVICE}"
+BUILD_CMD="brunch ${DEVICE} userdebug"
 
 tg_send() {
     curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
         -d chat_id="${TG_CHAT_ID}" \
         -d parse_mode="HTML" \
-        -d text="$1" > /dev/null
+        -d text="$1" > /dev/null 2>&1 || true
 }
 
 elapsed() {
@@ -157,9 +157,7 @@ set +e
 echo "[*] Setting up build environment..."
 source build/envsetup.sh
 
-echo "[*] Brunching device: ${DEVICE}"
-
-lunch voltage_avalon-bp4a-userdebug
+echo "[*] Brunching device: ${DEVICE} (userdebug)"
 
 ${BUILD_CMD} 2>&1
 BUILD_STATUS=$?
