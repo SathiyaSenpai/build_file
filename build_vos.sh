@@ -114,26 +114,8 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            path="vendor/oneplus/ir"
            remote="avalon-stuffs"
            revision="16" />
-
-  <remove-project name="packages_apps_Updater" />
+           
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
-  <remove-project name="vendor_voltage" />
-  <remove-project name="frameworks_base_new" />
-
-  <project name="packages_apps_Updater"
-           path="packages/apps/Updater"
-           remote="senpaisource"
-           revision="16.2" />
-  <project name="vendor_voltage"
-           path="vendor/voltage"
-           remote="senpaisource"
-           revision="16.2"
-           clone-depth="1" />
-  <project name="frameworks_base_new"
-           path="frameworks/base"
-           remote="senpaisource"
-           revision="16.2"
-           clone-depth="1" />
 
   <project name="lineage-priv"
            path="vendor/voltage-priv"
