@@ -51,6 +51,8 @@ echo "════════════════════════�
 echo "  Voltage OS Build — OnePlus Nord 4"
 echo "════════════════════════════════════"
 
+rm -rf device/oneplus/
+rm -rf vendor/voltage-priv/
 rm -rf .repo/local_manifests/
 
 echo "[*] Setting up local manifests..."
