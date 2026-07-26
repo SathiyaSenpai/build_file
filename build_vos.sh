@@ -28,7 +28,7 @@ gofile_upload() {
     local FILENAME=$(basename "$FILE_PATH")
     echo "[*] Fetching best GoFile server..." >&2
     local SERVER=$(curl -s "https://api.gofile.io/servers" \
-        | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['servers'][0]['name'], end='')")
+        | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['data']['servers'][0]['name'], end='')" 2>/dev/null || true)
     if [ -z "$SERVER" ]; then
         echo "[!] Falling back to store1" >&2
         SERVER="store1"
@@ -153,6 +153,7 @@ echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
 <b>Status:</b> Sync done, starting compilation..."
 
+set +e
 echo "[*] Setting up build environment..."
 source build/envsetup.sh
 
@@ -160,7 +161,6 @@ echo "[*] Brunching device: ${DEVICE}"
 
 lunch voltage_avalon-bp4a-userdebug
 
-set +e
 ${BUILD_CMD} 2>&1
 BUILD_STATUS=$?
 set -e
@@ -200,7 +200,7 @@ Elapsed: $(elapsed)"
             IMG_NAME=$(basename "$IMG")
             IMG_URL=$(gofile_upload "$IMG")
             if [[ "$IMG_URL" == http* ]]; then
-                IMG_LINKS="${IMG_LINKS}📎 <b>${IMG_NAME}:</b> ${IMG_URL}\n"
+                IMG_LINKS="${IMG_LINKS}📎 <b>${IMG_NAME}:</b> ${IMG_URL}"$'\n'
             fi
         fi
     done
