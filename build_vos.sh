@@ -54,6 +54,7 @@ echo "════════════════════════�
 rm -rf device/oneplus/
 rm -rf vendor/voltage-priv/
 rm -rf .repo/local_manifests/
+rm -rf out/target/product/avalon/
 
 echo "[*] Setting up local manifests..."
 mkdir -p .repo/local_manifests
