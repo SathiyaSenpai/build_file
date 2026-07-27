@@ -9,7 +9,7 @@ DEVICE="avalon"
 START_TIME=$(date +%s)
 LOG_TAG="Voltage | avalon"
 
-BUILD_CMD="brunch ${DEVICE} userdebug"
+BUILD_CMD="brunch ${DEVICE} eng"
 
 tg_send() {
     curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
