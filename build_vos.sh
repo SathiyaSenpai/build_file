@@ -68,14 +68,18 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/avalon-stuffs" />
   <remote name="senpaisource"
           fetch="https://github.com/SenpaiSource" />
-
+  <remote name="lineage"
+          fetch="https://github.com/LineageOS" />
+  <remote name="muppets"
+          fetch="https://github.com/TheMuppets" />
+          
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
            remote="sathiya"
            revision="voltage-16.2" />
   <project name="android_device_oneplus_sm8650-common"
            path="device/oneplus/sm8650-common"
-           remote="sathiya"
+           remote="lineage"
            revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
@@ -91,32 +95,16 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
-           remote="sathiya"
-           revision="16.2" />
+           remote="muppets"
+           revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
-           remote="sathiya"
-           revision="16.2" />
+           remote="muppets"
+           revision="lineage-23.2" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
-           revision="voltage-16.2" />
-
-  <project name="android_packages_apps_LunarisDolby"
-           path="packages/apps"
-           remote="avalon-stuffs"
-           revision="16" />
-  <project name="proprietary_vendor_sony_dolby"
-           path="vendor/sony/dolby"
-           remote="avalon-stuffs"
-           revision="16" />
-  <project name="proprietary_vendor_oneplus_ir"
-           path="vendor/oneplus/ir"
-           remote="avalon-stuffs"
-           revision="16" />
-           
-  <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
-
+           revision="voltage-bkp" />
   <project name="lineage-priv"
            path="vendor/voltage-priv"
            remote="sathiya"
