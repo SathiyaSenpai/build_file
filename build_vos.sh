@@ -9,7 +9,7 @@ DEVICE="avalon"
 START_TIME=$(date +%s)
 LOG_TAG="Voltage | avalon"
 
-BUILD_CMD="brunch ${DEVICE} eng"
+BUILD_CMD="brunch ${DEVICE}"
 
 tg_send() {
     curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
@@ -79,7 +79,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="voltage-16.2" />
   <project name="android_device_oneplus_sm8650-common"
            path="device/oneplus/sm8650-common"
-           remote="lineage"
+           remote="sathiya"
            revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
@@ -95,16 +95,16 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
-           remote="muppets"
-           revision="lineage-23.2" />
+           remote="sathiya"
+           revision="16.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
-           remote="muppets"
-           revision="lineage-23.2" />
+           remote="sathiya"
+           revision="16.2" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
-           revision="voltage-bkp" />
+           revision="voltage-16.2" />
   <project name="lineage-priv"
            path="vendor/voltage-priv"
            remote="sathiya"
@@ -126,7 +126,7 @@ tg_send "✅ <b>${LOG_TAG}</b>
 
 set +e
 echo "[*] Setting up build environment..."
-source build/envsetup.sh
+. build/envsetup.sh
 
 echo "[*] Brunching device: ${DEVICE} (userdebug)"
 
