@@ -72,7 +72,8 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/LineageOS" />
   <remote name="muppets"
           fetch="https://github.com/TheMuppets" />
-          
+
+  <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
            remote="sathiya"
