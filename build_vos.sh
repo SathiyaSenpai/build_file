@@ -55,6 +55,9 @@ echo "════════════════════════�
 #rm -rf vendor/voltage-priv/
 rm -rf .repo/local_manifests/
 #rm -rf out/target/product/avalon/
+rm -rf vendor/voltage
+rm -rf frameworks_base_new
+rm -rf packages_apps_Updater
 
 echo "[*] Setting up local manifests..."
 mkdir -p .repo/local_manifests
@@ -73,10 +76,6 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <remote name="muppets"
           fetch="https://github.com/TheMuppets" />
 
-          
-  <remove-project name="VoltageOS/vendor_voltage" />
-  <remove-project name="VoltageOS/frameworks_base_new" />
-  <remove-project name="VoltageOS/packages_apps_Updater" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
   
   <project name="android_device_oneplus_avalon"
