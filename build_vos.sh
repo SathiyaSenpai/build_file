@@ -115,6 +115,10 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            remote="sathiya"
            revision="voltage" />
 
+<remove-project name="packages_apps_Updater" />
+<remove-project name="vendor_voltage" />
+<remove-project name="frameworks_base_new" />
+
   <project name="packages_apps_Updater" 
            path="packages/apps/Updater" 
            remote="senpaisource" 
