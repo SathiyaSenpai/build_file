@@ -56,8 +56,8 @@ echo "════════════════════════�
 rm -rf .repo/local_manifests/
 #rm -rf out/target/product/avalon/
 rm -rf vendor/voltage
-rm -rf frameworks_base_new
-rm -rf packages_apps_Updater
+rm -rf frameworks/base
+rm -rf packages/apps/Updater
 
 echo "[*] Setting up local manifests..."
 mkdir -p .repo/local_manifests
