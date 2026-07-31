@@ -51,13 +51,8 @@ echo "════════════════════════�
 echo "  Voltage OS Build — OnePlus Nord 4"
 echo "════════════════════════════════════"
 
-#rm -rf device/oneplus/
 #rm -rf vendor/voltage-priv/
 rm -rf .repo/local_manifests/
-#rm -rf out/target/product/avalon/
-rm -rf vendor/voltage
-rm -rf frameworks/base
-rm -rf packages/apps/Updater
 
 echo "[*] Setting up local manifests..."
 mkdir -p .repo/local_manifests
@@ -75,17 +70,15 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/LineageOS" />
   <remote name="muppets"
           fetch="https://github.com/TheMuppets" />
-
-  <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
   
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
            remote="sathiya"
-           revision="voltage-16.2" />
+           revision="voltage-bkp" />
   <project name="android_device_oneplus_sm8650-common"
            path="device/oneplus/sm8650-common"
-           remote="sathiya"
-           revision="vos" />
+           remote="lineage"
+           revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
            remote="sathiya"
@@ -100,39 +93,27 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
-           remote="sathiya"
-           revision="16.2" />
+           remote="muppets"
+           revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
-           remote="sathiya"
-           revision="16.2" />
+           remote="muppets"
+           revision="lineage-23.2" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
-           remote="sathiya"
-           revision="voltage-16.2" />
+           remote="lineage"
+           revision="lineage-23.2" />
   <project name="lineage-priv"
            path="vendor/voltage-priv"
            remote="sathiya"
            revision="voltage" />
 
 <remove-project name="packages_apps_Updater" />
-<remove-project name="vendor_voltage" />
-<remove-project name="frameworks_base_new" />
 
   <project name="packages_apps_Updater" 
            path="packages/apps/Updater" 
            remote="senpaisource" 
            revision="16.2" />
-  <project name="vendor_voltage" 
-           path="vendor/voltage" 
-           remote="senpaisource" 
-           revision="16.2" 
-           clone-depth="1" />
-  <project name="frameworks_base_new" 
-           path="frameworks/base" 
-           remote="senpaisource" 
-           revision="16.2" 
-           clone-depth="1" />
 </manifest>
 LOCALMANIFEST
 
