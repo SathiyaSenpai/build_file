@@ -101,8 +101,8 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
-           remote="lineage"
-           revision="lineage-23.2" />
+           remote="sathiya"
+           revision="voltage-bkp" />
   <project name="lineage-priv"
            path="vendor/voltage-priv"
            remote="sathiya"
