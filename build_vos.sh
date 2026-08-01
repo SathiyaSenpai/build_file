@@ -70,7 +70,9 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/LineageOS" />
   <remote name="muppets"
           fetch="https://github.com/TheMuppets" />
-  
+  <remote name="yaap"
+          fetch="https://github.com/yaap" />
+          
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
            remote="sathiya"
@@ -99,10 +101,10 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            path="vendor/oneplus/sm8650-common"
            remote="muppets"
            revision="lineage-23.2" />
-  <project name="android_hardware_oplus"
+  <project name="hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
-           revision="voltage-bkp" />
+           revision="sixteen" />
   <project name="lineage-priv"
            path="vendor/voltage-priv"
            remote="sathiya"
