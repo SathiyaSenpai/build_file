@@ -134,7 +134,7 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
   <project name="frameworks_base" 
            path="frameworks/base" 
            remote="sathiya" 
-           revision="16.2-bkp" 
+           revision="16.2" 
            clone-depth="1" />
 </manifest>
 LOCALMANIFEST
