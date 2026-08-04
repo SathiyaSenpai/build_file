@@ -109,8 +109,6 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            path="vendor/voltage-priv"
            remote="sathiya"
            revision="voltage" />
-           
-<remove-project name="platform/hardware/qcom-caf/bootctrl" />
 
 </manifest>
 LOCALMANIFEST
