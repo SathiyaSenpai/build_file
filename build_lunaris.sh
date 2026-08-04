@@ -67,6 +67,9 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/LineageOS" />
   <remote name="avalon-stuffs"
           fetch="https://github.com/avalon-stuffs" />
+  <remote name="source"
+          fetch="https://github.com/SenpaiSource" />
+          
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
            remote="sathiya"
@@ -121,18 +124,18 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="Lunaris-AOSP/packages_apps_Updater" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
 
-  <project name="packages_apps_Updater" 
+  <project name="luna_packages_apps_Updater" 
            path="packages/apps/Updater" 
-           remote="sathiya" 
+           remote="source" 
            revision="16.2" />
-  <project name="vendor_lineage" 
+  <project name="luna_vendor_lineage" 
            path="vendor/lineage" 
-           remote="sathiya" 
+           remote="source" 
            revision="16.2" 
            clone-depth="1" />
-  <project name="frameworks_base" 
+  <project name="luna_frameworks_base" 
            path="frameworks/base" 
-           remote="sathiya" 
+           remote="source" 
            revision="16.2" 
            clone-depth="1" />
 </manifest>
