@@ -112,7 +112,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
 
 <remove-project name="packages_apps_Updater" />
 
-  <project name="packages_apps_Updater" 
+  <project name="vos_packages_apps_Updater" 
            path="packages/apps/Updater" 
            remote="senpaisource" 
            revision="16.2" />
