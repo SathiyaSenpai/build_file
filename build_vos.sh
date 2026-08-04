@@ -76,7 +76,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
            remote="sathiya"
-           revision="voltage-bkp" />
+           revision="voltage-16.2" />
   <project name="android_device_oneplus_sm8650-common"
            path="device/oneplus/sm8650-common"
            remote="lineage"
@@ -95,12 +95,12 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
-           remote="muppets"
-           revision="lineage-23.2" />
+           remote="sathiya"
+           revision="16.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
-           remote="muppets"
-           revision="lineage-23.2" />
+           remote="sathiya"
+           revision="16.2" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
