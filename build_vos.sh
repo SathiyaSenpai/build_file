@@ -64,7 +64,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/SathiyaSenpai" />
   <remote name="avalon-stuffs"
           fetch="https://github.com/avalon-stuffs" />
-  <remote name="senpaisource"
+  <remote name="source"
           fetch="https://github.com/SenpaiSource" />
   <remote name="lineage"
           fetch="https://github.com/LineageOS" />
@@ -83,15 +83,15 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
-           remote="sathiya"
+           remote="source"
            revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650-modules"
            path="kernel/oneplus/sm8650-modules"
-           remote="sathiya"
+           remote="source"
            revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650-devicetrees"
            path="kernel/oneplus/sm8650-devicetrees"
-           remote="sathiya"
+           remote="source"
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
@@ -101,10 +101,10 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            path="vendor/oneplus/sm8650-common"
            remote="muppets"
            revision="lineage-23.2" />
-  <project name="hardware_oplus"
+  <project name="android_hardware_oplus"
            path="hardware/oplus"
            remote="sathiya"
-           revision="sixteen" />
+           revision="voltage-bkp" />
   <project name="lineage-priv"
            path="vendor/voltage-priv"
            remote="sathiya"
@@ -114,7 +114,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
 
   <project name="vos_packages_apps_Updater" 
            path="packages/apps/Updater" 
-           remote="senpaisource" 
+           remote="source" 
            revision="16.2" />
 </manifest>
 LOCALMANIFEST

@@ -64,6 +64,9 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/SathiyaSenpai" />
   <remote name="lineage"
           fetch="https://github.com/LineageOS" />
+  <remote name="source"
+          fetch="https://github.com/SenpaiSource" />
+
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
            remote="sathiya"
@@ -74,15 +77,15 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
-           remote="sathiya"
+           remote="source"
            revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650-modules"
            path="kernel/oneplus/sm8650-modules"
-           remote="sathiya"
+           remote="source"
            revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650-devicetrees"
            path="kernel/oneplus/sm8650-devicetrees"
-           remote="sathiya"
+           remote="source"
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
@@ -112,6 +115,21 @@ cat > .repo/local_manifests/aviumui_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="AviumUI/android_vendor_lineage" />
   <remove-project name="AviumUI/android_frameworks_base" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
+
+  <project name="avium_packages_apps_Updater" 
+           path="packages/apps/Updater" 
+           remote="source" 
+           revision="16.2" />
+  <project name="avium_vendor_lineage" 
+           path="vendor/lineage" 
+           remote="source" 
+           revision="16.2" 
+           clone-depth="1" />
+  <project name="avium_frameworks_base" 
+           path="frameworks/base" 
+           remote="source" 
+           revision="16.2" 
+           clone-depth="1" />
 </manifest>
 LOCALMANIFEST
 
