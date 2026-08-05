@@ -110,8 +110,8 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            remote="sathiya"
            revision="voltage" />
 
-  <remove-project name="Lunaris-AOSP/vendor_lineage" />
-  <remove-project name="Lunaris-AOSP/frameworks_base" />
+  <remove-project name="vendor_voltage" />
+  <remove-project name="frameworks_base_new" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
 
   <project name="vendor_voltage" 
