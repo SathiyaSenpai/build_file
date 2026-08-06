@@ -176,7 +176,7 @@ if [ $BUILD_STATUS -eq 0 ]; then
     BOOT_IMG="${OUT_DIR}/boot.img"
     RECOVERY_IMG="${OUT_DIR}/recovery.img"
     VENDOR_BOOT_IMG="${OUT_DIR}/vendor_boot.img"
-    DTBO_IMG="${OUT_DIR}/dtbo.img"
+    INIT_BOOT_IMG="${OUT_DIR}/init_boot.img"
 
     if [ -z "$ZIP_FILE" ]; then
         tg_send "⚠️ <b>${LOG_TAG}</b>
@@ -196,7 +196,7 @@ Elapsed: $(elapsed)"
     DOWNLOAD_URL=$(gofile_upload "$ZIP_FILE")
 
     IMG_LINKS=""
-    for IMG in "$BOOT_IMG" "$RECOVERY_IMG" "$VENDOR_BOOT_IMG" "$DTBO_IMG"; do
+    for IMG in "$BOOT_IMG" "$RECOVERY_IMG" "$VENDOR_BOOT_IMG" "$INIT_BOOT_IMG"; do
         if [ -f "$IMG" ]; then
             IMG_NAME=$(basename "$IMG")
             IMG_URL=$(gofile_upload "$IMG")
