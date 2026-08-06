@@ -65,8 +65,8 @@ cat > .repo/local_manifests/lunaris_audi.xml << 'LOCALMANIFEST'
           fetch="https://github.com/SathiyaSenpai" />
   <remote name="lineage"
           fetch="https://github.com/LineageOS" />
-  <remote name="audi-stuffs"
-          fetch="https://github.com/audi-stuffs" />
+  <remote name="avalon-stuffs"
+          fetch="https://github.com/avalon-stuffs" />
   <remote name="source"
           fetch="https://github.com/SenpaiSource" />
           
