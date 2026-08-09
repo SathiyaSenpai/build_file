@@ -2,9 +2,12 @@
 
 set -e
 
-TG_BOT_TOKEN="8640370988:AAEiYvxOVSNXNLyWzqTxzYD_IW5qUhRvyY8"
-TG_CHAT_ID="-1003917803238"
+set -o allexport
+source .env
+set +o allexport
+
 DEVICE="avalon"
+LOG="build.log"
 
 START_TIME=$(date +%s)
 LOG_TAG="Voltage | avalon"
@@ -18,9 +21,142 @@ tg_send() {
         -d text="$1" > /dev/null 2>&1 || true
 }
 
+tg_send_file() {
+    curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendDocument" \
+        -F chat_id="${TG_CHAT_ID}" \
+        -F document=@"$1" \
+        -F caption="$2" > /dev/null 2>&1 || true
+}
+
+tg_send_with_button() {
+    curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/sendMessage" \
+        -d chat_id="${TG_CHAT_ID}" \
+        -d parse_mode="HTML" \
+        -d disable_web_page_preview="true" \
+        -d text="$1" \
+        -d reply_markup='{
+          "inline_keyboard": [[
+            {"text": "🔄 Refresh Info", "callback_data": "refresh"}
+          ]]
+        }' | jq -r '.result.message_id' 2>/dev/null || true
+}
+
+tg_edit_msg() {
+    local MSG_ID="$1"
+    local TEXT="$2"
+
+    curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/editMessageText" \
+        -d chat_id="${TG_CHAT_ID}" \
+        -d message_id="$MSG_ID" \
+        -d parse_mode="HTML" \
+        -d disable_web_page_preview="true" \
+        -d text="$TEXT" > /dev/null 2>&1 || true
+}
+
+tg_edit_with_button() {
+    local MSG_ID="$1"
+    local TEXT="$2"
+
+    curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/editMessageText" \
+        -d chat_id="${TG_CHAT_ID}" \
+        -d message_id="$MSG_ID" \
+        -d parse_mode="HTML" \
+        -d disable_web_page_preview="true" \
+        -d text="$TEXT" \
+        -d reply_markup='{
+          "inline_keyboard": [[
+            {"text": "🔄 Refresh Info", "callback_data": "refresh"}
+          ]]
+        }' > /dev/null 2>&1 || true
+}
+
 elapsed() {
     local ELAPSED=$(( $(date +%s) - START_TIME ))
     printf '%dh %dm %ds' $(( ELAPSED/3600 )) $(( (ELAPSED%3600)/60 )) $(( ELAPSED%60 ))
+}
+
+get_stats() {
+    read -r _ u1 n1 s1 i1 w1 irq1 sirq1 st1 _ < /proc/stat
+    sleep 1
+    read -r _ u2 n2 s2 i2 w2 irq2 sirq2 st2 _ < /proc/stat
+
+    idle1=$((i1 + w1))
+    idle2=$((i2 + w2))
+
+    total1=$((u1 + n1 + s1 + i1 + w1 + irq1 + sirq1 + st1))
+    total2=$((u2 + n2 + s2 + i2 + w2 + irq2 + sirq2 + st2))
+
+    diff_idle=$((idle2 - idle1))
+    diff_total=$((total2 - total1))
+
+    local CPU=0
+    if [ "$diff_total" -gt 0 ]; then
+        CPU=$(( 100 * (diff_total - diff_idle) / diff_total ))
+    fi
+
+    MEM_USED=$(free -m | awk '/Mem:/ {print $3}')
+    MEM_TOTAL=$(free -m | awk '/Mem:/ {print $2}')
+    LOAD=$(cut -d' ' -f1 /proc/loadavg)
+    echo "$CPU|$MEM_USED|$MEM_TOTAL|$LOAD"
+}
+
+build_progress_text() {
+    local STATS CPU MEM_USED MEM_TOTAL LOAD CONSOLE NOW_LOCAL
+
+    STATS=$(get_stats)
+    CPU=$(echo "$STATS" | cut -d'|' -f1)
+    MEM_USED=$(echo "$STATS" | cut -d'|' -f2)
+    MEM_TOTAL=$(echo "$STATS" | cut -d'|' -f3)
+    LOAD=$(echo "$STATS" | cut -d'|' -f4)
+
+    CONSOLE=$(grep -v '^\s*$' "$LOG" 2>/dev/null | tail -n1 | cut -c1-110)
+    NOW_LOCAL=$(date +"%H:%M:%S")
+
+    cat <<EOF
+⚙️ <b>${LOG_TAG}</b>
+
+💻 CPU: <code>${CPU}%</code>
+💾 RAM: <code>${MEM_USED}MB / ${MEM_TOTAL}MB</code>
+⚡ Load: <code>${LOAD}</code>
+
+🕛 Elapsed: $(elapsed)
+🔥 Status: Compiling...
+📟 Console: <code>${CONSOLE}</code>
+
+🔄 Last Refreshed: <code>${NOW_LOCAL}</code>
+EOF
+}
+
+listen_refresh() {
+    local OFFSET=0
+
+    while true; do
+        UPDATES=$(curl -s "https://api.telegram.org/bot${TG_BOT_TOKEN}/getUpdates?offset=${OFFSET}")
+        COUNT=$(echo "$UPDATES" | jq '.result | length')
+
+        if [ "$COUNT" -gt 0 ]; then
+            for ((i=0; i<COUNT; i++)); do
+                UPDATE=$(echo "$UPDATES" | jq -c ".result[$i]")
+
+                UPDATE_ID=$(echo "$UPDATE" | jq '.update_id')
+                OFFSET=$((UPDATE_ID + 1))
+
+                CALLBACK=$(echo "$UPDATE" | jq -r '.callback_query.data // empty')
+                MSG_ID=$(echo "$UPDATE" | jq -r '.callback_query.message.message_id // empty')
+
+                if [ "$CALLBACK" = "refresh" ] && [ -n "$MSG_ID" ]; then
+                    CALLBACK_ID=$(echo "$UPDATE" | jq -r '.callback_query.id // empty')
+
+                    curl -s -X POST "https://api.telegram.org/bot${TG_BOT_TOKEN}/answerCallbackQuery" \
+                         -d callback_query_id="$CALLBACK_ID" > /dev/null
+
+                    tg_edit_with_button "$MSG_ID" "$(build_progress_text)"
+                fi
+            done
+        fi
+
+        sleep 2
+    done
 }
 
 gofile_upload() {
@@ -51,7 +187,7 @@ echo "════════════════════════�
 echo "  Voltage OS Build — OnePlus Nord 4"
 echo "════════════════════════════════════"
 
-#rm -rf vendor/voltage-priv/
+rm -rf vendor/voltage-priv/
 rm -rf .repo/local_manifests/
 
 echo "[*] Setting up local manifests..."
@@ -72,7 +208,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/TheMuppets" />
   <remote name="yaap"
           fetch="https://github.com/yaap" />
-          
+
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
            remote="sathiya"
@@ -105,10 +241,6 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            path="hardware/oplus"
            remote="sathiya"
            revision="voltage-bkp" />
-  <project name="lineage-priv"
-           path="vendor/voltage-priv"
-           remote="sathiya"
-           revision="voltage" />
 
   <remove-project name="vendor_voltage" />
   <remove-project name="frameworks_base_new" />
@@ -136,25 +268,44 @@ tg_send "🔄 <b>${LOG_TAG}</b>
 
 /opt/crave/resync.sh 2>&1
 
+echo "[*] Cloning private lineage-priv..."
+git clone "https://${GH_TOKEN}@github.com/SathiyaSenpai/lineage-priv.git" -b voltage vendor/voltage-priv
+
 echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
 <b>Status:</b> Sync done, starting compilation..."
 
-set +e
 echo "[*] Setting up build environment..."
 . build/envsetup.sh
 
 echo "[*] Brunching device: ${DEVICE} (userdebug)"
 
-${BUILD_CMD} 2>&1
-BUILD_STATUS=$?
+touch "$LOG"
+
+PROGRESS_MSG_ID=$(tg_send_with_button "⚙️ <b>${LOG_TAG}</b>
+🔥 Status: Compiling...
+🔄 Tap Refresh Info to refresh build stats!")
+
+listen_refresh &
+LISTENER_PID=$!
+
+set +e
+${BUILD_CMD} 2>&1 | tee "$LOG"
+BUILD_STATUS=${PIPESTATUS[0]}
 set -e
 
+kill "$LISTENER_PID" 2>/dev/null
+wait "$LISTENER_PID" 2>/dev/null
+
 if [ $BUILD_STATUS -eq 0 ]; then
+    tg_edit_msg "$PROGRESS_MSG_ID" "⚙️ <b>${LOG_TAG}</b>
+🔥 Status: ✅ Success
+🕛 Time: $(elapsed)"
+
     OUT_DIR="out/target/product/${DEVICE}"
 
-    ZIP_FILE=$(find "${OUT_DIR}" -maxdepth 1 \( -name "Voltage-*.zip" -o -name "*${DEVICE}*.zip" \) \
-               2>/dev/null | grep -v "ota_update" | head -1)
+    mapfile -t ZIP_CANDIDATES < <(compgen -G "${OUT_DIR}/Voltage-*.zip"; compgen -G "${OUT_DIR}/*${DEVICE}*.zip")
+    mapfile -t ZIP_CANDIDATES < <(printf '%s\n' "${ZIP_CANDIDATES[@]}" | grep -v "ota_update" | sort -u)
 
     BOOT_IMG="${OUT_DIR}/boot.img"
     RECOVERY_IMG="${OUT_DIR}/recovery.img"
@@ -162,13 +313,14 @@ if [ $BUILD_STATUS -eq 0 ]; then
     INIT_BOOT_IMG="${OUT_DIR}/init_boot.img"
     SUPER_EMPTY_IMG="${OUT_DIR}/super_empty.img"
 
-    if [ -z "$ZIP_FILE" ]; then
+    if [ "${#ZIP_CANDIDATES[@]}" -eq 0 ]; then
         tg_send "⚠️ <b>${LOG_TAG}</b>
 Build succeeded but ZIP not found in <code>${OUT_DIR}</code>
 Elapsed: $(elapsed)"
         exit 1
     fi
 
+    ZIP_FILE="${ZIP_CANDIDATES[0]}"
     ZIP_SIZE=$(du -sh "$ZIP_FILE" | cut -f1)
 
     tg_send "📦 <b>${LOG_TAG}</b>
@@ -217,12 +369,25 @@ ${IMG_LINKS}"
     fi
 
 else
+    tg_edit_msg "$PROGRESS_MSG_ID" "⚙️ <b>${LOG_TAG}</b>
+🔥 Status: ❌ Failed
+🕛 Time: $(elapsed)"
+
     tg_send "❌ <b>${LOG_TAG} — BUILD FAILED</b>
 
 <b>Exit Code:</b> <code>${BUILD_STATUS}</code>
 ⏱️ <b>Elapsed:</b> $(elapsed)
 
 Check Crave logs at: https://foss.crave.io"
+
+    if [ -f "out/error.log" ]; then
+        tg_send_file "out/error.log" "📜 Build Error Log — ${DEVICE}"
+    else
+        tail -n 120 "$LOG" > error_tail.log
+        tg_send_file "error_tail.log" "📜 Last 120 lines — ${DEVICE} (no out/error.log found)"
+        rm -f error_tail.log
+    fi
+
     exit $BUILD_STATUS
 fi
 
