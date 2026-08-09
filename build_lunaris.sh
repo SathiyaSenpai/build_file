@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 set -o allexport
 source .env
 set +o allexport
@@ -133,7 +131,7 @@ listen_refresh() {
 
     while true; do
         UPDATES=$(curl -s "https://api.telegram.org/bot${TG_BOT_TOKEN}/getUpdates?offset=${OFFSET}")
-        COUNT=$(echo "$UPDATES" | jq '.result | length')
+        COUNT=$(echo "$UPDATES" | jq '.result | length' 2>/dev/null || echo "0")
 
         if [ "$COUNT" -gt 0 ]; then
             for ((i=0; i<COUNT; i++)); do
@@ -271,17 +269,21 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
 </manifest>
 LOCALMANIFEST
 
-repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1
+repo init -u https://github.com/Lunaris-AOSP/android -b 16.2 --git-lfs --depth=1 || { tg_send "❌ <b>${LOG_TAG}</b>
+Setup failed at repo init."; exit 1; }
 
 echo "[*] Syncing sources..."
 tg_send "🔄 <b>${LOG_TAG}</b>
 <b>Status:</b> Syncing sources..."
 
-/opt/crave/resync.sh 2>&1
+/opt/crave/resync.sh 2>&1 || { tg_send "❌ <b>${LOG_TAG}</b>
+Source sync failed."; exit 1; }
 
 echo "[*] Cloning private lineage-priv..."
 rm -rf vendor/lineage-priv
-git clone "https://${GH_TOKEN}@github.com/SathiyaSenpai/lineage-priv.git" -b main vendor/lineage-priv
+
+git clone "https://${GH_TOKEN}@github.com/SathiyaSenpai/lineage-priv.git" -b main vendor/lineage-priv || { tg_send "❌ <b>${LOG_TAG}</b>
+Failed to clone lineage-priv."; exit 1; }
 
 echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
@@ -291,7 +293,8 @@ echo "[*] Setting up build environment..."
 source build/envsetup.sh
 
 echo "[*] Lunching target: ${LUNCH_TARGET}"
-lunch "${LUNCH_TARGET}"
+lunch "${LUNCH_TARGET}" || { tg_send "❌ <b>${LOG_TAG}</b>
+Lunch command failed for ${LUNCH_TARGET}."; exit 1; }
 
 m installclean
 
