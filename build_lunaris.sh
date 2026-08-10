@@ -4,7 +4,7 @@ set -o allexport
 source .env
 set +o allexport
 
-LUNCH_TARGET="lineage_avalon-bp4a-user"
+LUNCH_TARGET="lineage_avalon-bp4a-userdebug"
 DEVICE="avalon"
 LOG="build.log"
 
