@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 set -o allexport
 source .env
 set +o allexport
@@ -132,7 +130,7 @@ listen_refresh() {
 
     while true; do
         UPDATES=$(curl -s "https://api.telegram.org/bot${TG_BOT_TOKEN}/getUpdates?offset=${OFFSET}")
-        COUNT=$(echo "$UPDATES" | jq '.result | length')
+        COUNT=$(echo "$UPDATES" | jq '.result | length' 2>/dev/null || echo "0")
 
         if [ "$COUNT" -gt 0 ]; then
             for ((i=0; i<COUNT; i++)); do
@@ -260,16 +258,19 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
 </manifest>
 LOCALMANIFEST
 
-repo init -u https://github.com/VoltageOS/manifest.git -b 16.2 --git-lfs --depth=1
+repo init -u https://github.com/VoltageOS/manifest.git -b 16.2 --git-lfs --depth=1 || { tg_send "❌ <b>${LOG_TAG}</b>
+Setup failed at repo init."; exit 1; }
 
 echo "[*] Syncing sources..."
 tg_send "🔄 <b>${LOG_TAG}</b>
 <b>Status:</b> Syncing sources..."
 
-/opt/crave/resync.sh 2>&1
+/opt/crave/resync.sh 2>&1 || { tg_send "❌ <b>${LOG_TAG}</b>
+Source sync failed."; exit 1; }
 
 echo "[*] Cloning private lineage-priv..."
-git clone "https://${GH_TOKEN}@github.com/SathiyaSenpai/lineage-priv.git" -b voltage vendor/voltage-priv
+git clone "https://${GH_TOKEN}@github.com/SathiyaSenpai/lineage-priv.git" -b voltage vendor/voltage-priv || { tg_send "❌ <b>${LOG_TAG}</b>
+Failed to clone voltage-priv."; exit 1; }
 
 echo "[*] Sync complete."
 tg_send "✅ <b>${LOG_TAG}</b>
@@ -289,10 +290,8 @@ PROGRESS_MSG_ID=$(tg_send_with_button "⚙️ <b>${LOG_TAG}</b>
 listen_refresh &
 LISTENER_PID=$!
 
-set +e
 ${BUILD_CMD} 2>&1 | tee "$LOG"
 BUILD_STATUS=${PIPESTATUS[0]}
-set -e
 
 kill "$LISTENER_PID" 2>/dev/null
 wait "$LISTENER_PID" 2>/dev/null
