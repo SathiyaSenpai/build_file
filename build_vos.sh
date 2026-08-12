@@ -185,7 +185,6 @@ echo "════════════════════════�
 echo "  Voltage OS Build — OnePlus Nord 4"
 echo "════════════════════════════════════"
 
-rm -rf vendor/voltage-priv
 rm -rf .repo/local_manifests/
 
 echo "[*] Setting up local manifests..."
@@ -267,6 +266,8 @@ tg_send "🔄 <b>${LOG_TAG}</b>
 
 /opt/crave/resync.sh 2>&1 || { tg_send "❌ <b>${LOG_TAG}</b>
 Source sync failed."; exit 1; }
+
+rm -rf vendor/voltage-priv
 
 echo "[*] Cloning private lineage-priv..."
 git clone "https://${GH_TOKEN}@github.com/SathiyaSenpai/lineage-priv.git" -b voltage vendor/voltage-priv || { tg_send "❌ <b>${LOG_TAG}</b>
