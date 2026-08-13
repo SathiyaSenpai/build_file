@@ -244,7 +244,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <project name="vos_frameworks_base_new" 
            path="frameworks/base" 
            remote="source" 
-           revision="16.2" 
+           revision="17.0" 
            clone-depth="1" />
 
 </manifest>
