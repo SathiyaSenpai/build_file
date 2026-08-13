@@ -250,7 +250,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
 </manifest>
 LOCALMANIFEST
 
-repo init -u https://github.com/VoltageOS/manifest.git -b 16.2 --git-lfs --depth=1 || { tg_send "❌ <b>${LOG_TAG}</b>
+repo init -u https://github.com/VoltageOS/manifest.git -b 17 --git-lfs --depth=1 || { tg_send "❌ <b>${LOG_TAG}</b>
 Setup failed at repo init."; exit 1; }
 
 echo "[*] Syncing sources..."
