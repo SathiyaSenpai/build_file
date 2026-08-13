@@ -239,15 +239,8 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            remote="sathiya"
            revision="voltage-bkp" />
 
-  <remove-project name="vendor_voltage" />
   <remove-project name="frameworks_base_new" />
-  <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
 
-  <project name="vendor_voltage" 
-           path="vendor/voltage" 
-           remote="source" 
-           revision="16.2" 
-           clone-depth="1" />
   <project name="vos_frameworks_base_new" 
            path="frameworks/base" 
            remote="source" 
