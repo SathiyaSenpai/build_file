@@ -186,15 +186,19 @@ echo "════════════════════════�
 echo "  Lunaris Build — OnePlus Nord 4"
 echo "════════════════════════════════════"
 
+rm -rf device/oneplus/avalon
+rm -rf device/oneplus/sm8650-common
+rm -rf vendor/oneplus/avalon
+rm -rf vendor/oneplus/sm8650-common
+rm -rf frameworks/base
 rm -rf .repo/local_manifests/
+
 echo "[*] Setting up local manifests..."
 mkdir -p .repo/local_manifests
 
 cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-  <remote name="sathiya"
-          fetch="https://github.com/SathiyaSenpai" />
   <remote name="lineage"
           fetch="https://github.com/LineageOS" />
   <remote name="avalon-stuffs"
@@ -204,11 +208,11 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
 
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
-           remote="sathiya"
+           remote="source"
            revision="luna-16.2" />
   <project name="android_device_oneplus_sm8650-common"
            path="device/oneplus/sm8650-common"
-           remote="sathiya"
+           remote="source"
            revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
@@ -224,15 +228,15 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
-           remote="sathiya"
+           remote="source"
            revision="16.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
-           remote="sathiya"
+           remote="source"
            revision="16.2" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
-           remote="sathiya"
+           remote="source"
            revision="lineage-23.2" />
   <project name="android_packages_apps_LunarisDolby"
            path="packages/apps"
