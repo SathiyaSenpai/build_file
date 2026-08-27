@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -e
-
 set -o allexport
 source .env
 set +o allexport
@@ -206,11 +204,11 @@ cat > .repo/local_manifests/lunaris_audi.xml << 'LOCALMANIFEST'
 
   <project name="android_device_oneplus_audi"
            path="device/oneplus/audi"
-           remote="sathiya"
+           remote="source"
            revision="luna-16.2" />
   <project name="android_device_oneplus_sm8650-common"
            path="device/oneplus/sm8650-common"
-           remote="sathiya"
+           remote="source"
            revision="audi-16.2" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
@@ -230,11 +228,11 @@ cat > .repo/local_manifests/lunaris_audi.xml << 'LOCALMANIFEST'
            revision="16.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
-           remote="sathiya"
+           remote="source"
            revision="16.2" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
-           remote="sathiya"
+           remote="source"
            revision="lineage-23.2" />
   <project name="android_packages_apps_LunarisDolby"
            path="packages/apps"
