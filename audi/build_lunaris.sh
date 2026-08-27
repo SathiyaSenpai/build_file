@@ -186,6 +186,8 @@ echo "════════════════════════�
 echo "  Lunaris Build — OnePlus ACE 3V"
 echo "════════════════════════════════════"
 
+rm -rf device/oneplus/sm8650-common
+rm -rf device/oneplus/audi
 rm -rf .repo/local_manifests/
 echo "[*] Setting up local manifests..."
 mkdir -p .repo/local_manifests
@@ -209,7 +211,7 @@ cat > .repo/local_manifests/lunaris_audi.xml << 'LOCALMANIFEST'
   <project name="android_device_oneplus_sm8650-common"
            path="device/oneplus/sm8650-common"
            remote="source"
-           revision="audi-16.2" />
+           revision="lineage-23.2" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
            remote="source"
