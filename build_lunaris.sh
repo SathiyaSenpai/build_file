@@ -250,6 +250,10 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            path="vendor/oneplus/ir"
            remote="avalon-stuffs"
            revision="16" />
+  <project name="proprietary_vendor_oneplus_ltw"
+           path="vendor/oneplus/ltw"
+           remote="source"
+           revision="16" />
 
   <remove-project name="Lunaris-AOSP/vendor_lineage" />
   <remove-project name="Lunaris-AOSP/frameworks_base" />
