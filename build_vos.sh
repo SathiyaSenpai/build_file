@@ -234,6 +234,22 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            path="hardware/oplus"
            remote="source"
            revision="voltage-17.0" />
+  <project name="android_packages_apps_LunarisDolby"
+           path="packages/apps"
+           remote="avalon-stuffs"
+           revision="16" />
+  <project name="proprietary_vendor_sony_dolby"
+           path="vendor/sony/dolby"
+           remote="avalon-stuffs"
+           revision="16" />
+  <project name="proprietary_vendor_oneplus_ir"
+           path="vendor/oneplus/ir"
+           remote="avalon-stuffs"
+           revision="16" />
+  <project name="proprietary_vendor_oneplus_ltw"
+           path="vendor/oneplus/ltw"
+           remote="source"
+           revision="16" />
 
   <remove-project name="vendor_voltage" />
   <remove-project name="frameworks_base_new" />
