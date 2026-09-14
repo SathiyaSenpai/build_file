@@ -193,8 +193,6 @@ mkdir -p .repo/local_manifests
 cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
-  <remote name="sathiya"
-          fetch="https://github.com/SathiyaSenpai" />
   <remote name="avalon-stuffs"
           fetch="https://github.com/avalon-stuffs" />
   <remote name="source"
@@ -203,17 +201,15 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/LineageOS" />
   <remote name="muppets"
           fetch="https://github.com/TheMuppets" />
-  <remote name="yaap"
-          fetch="https://github.com/yaap" />
 
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
-           remote="sathiya"
-           revision="voltage-16.2" />
+           remote="source"
+           revision="voltage-17" />
   <project name="android_device_oneplus_sm8650-common"
            path="device/oneplus/sm8650-common"
-           remote="lineage"
-           revision="lineage-23.2" />
+           remote="source"
+           revision="voltage-17" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
            remote="source"
@@ -228,23 +224,30 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
-           remote="sathiya"
+           remote="source"
            revision="16.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
-           remote="sathiya"
-           revision="16.2" />
+           remote="source"
+           revision="17.0" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
-           remote="sathiya"
-           revision="voltage-bkp" />
+           remote="source"
+           revision="voltage-17.0" />
 
+  <remove-project name="vendor_voltage" />
   <remove-project name="frameworks_base_new" />
-
+  <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
+  
   <project name="vos_frameworks_base_new" 
            path="frameworks/base" 
            remote="source" 
            revision="17.0" 
+           clone-depth="1" />
+  <project name="vendor_voltage" 
+           path="vendor/voltage" 
+           remote="source" 
+           revision="17" 
            clone-depth="1" />
 
 </manifest>
