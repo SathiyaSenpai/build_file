@@ -209,7 +209,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <project name="android_device_oneplus_sm8650-common"
            path="device/oneplus/sm8650-common"
            remote="source"
-           revision="lineage-23.2" />
+           revision="17" />
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
            remote="source"
