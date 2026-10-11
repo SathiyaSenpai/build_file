@@ -205,6 +205,8 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/avalon-stuffs" />
   <remote name="source"
           fetch="https://github.com/SenpaiSource" />
+  <remote name="klaus"
+          fetch="https://gitea.com/EternalMikaelson" />
 
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
@@ -256,8 +258,8 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            revision="16" />
   <project name="proprietary_vendor_oplus_camera"
            path="vendor/oplus/camera"
-           remote="source"
-           revision="16" />
+           remote="klaus"
+           revision="17-avalon" />
   <project name="packages_apps_AxionWidgets"
            path="packages/apps/AxionWidgets"
            remote="source"
@@ -269,9 +271,9 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="Lunaris-AOSP/frameworks_native" />
   <remove-project name="Lunaris-AOSP/system_sepolicy" />
   <remove-project name="Lunaris-AOSP/build_soong" />
-  <remove-project name="android_device_qcom_sepolicy_vndr" />
   <remove-project name="packages_apps_Updater" />
   <remove-project name="Lunaris-AOSP/packages_apps_Updater" />
+  <remove-project name="LineageOS/android_device_qcom_sepolicy_vndr" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
 
   <project name="luna_packages_apps_Updater" 
@@ -289,27 +291,27 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            revision="16.2" 
            clone-depth="1" />
   <project name="luna_frameworks_av" 
-           path="frameworks/base" 
+           path="frameworks/av" 
            remote="source" 
            revision="16.2" 
            clone-depth="1" />
   <project name="luna_frameworks_native" 
-           path="frameworks/base" 
+           path="frameworks/native" 
            remote="source" 
            revision="16.2" 
            clone-depth="1" />
   <project name="luna_system_sepolicy" 
-           path="frameworks/base" 
+           path="system/sepolicy" 
            remote="source" 
            revision="16" 
            clone-depth="1" />
   <project name="luna_build_soong" 
-           path="frameworks/base" 
+           path="build/soong" 
            remote="source" 
            revision="16.2" 
            clone-depth="1" />
   <project name="android_device_qcom_sepolicy_vndr"
-           path="frameworks/base" 
+           path="device/qcom/sepolicy_vndr/sm8650" 
            remote="source" 
            revision="lineage-23.2-caf-sm8650" 
            clone-depth="1" />
