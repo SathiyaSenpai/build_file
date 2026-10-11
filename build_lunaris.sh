@@ -261,6 +261,12 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
 
   <remove-project name="Lunaris-AOSP/vendor_lineage" />
   <remove-project name="Lunaris-AOSP/frameworks_base" />
+  <remove-project name="Lunaris-AOSP/frameworks_av" />
+  <remove-project name="Lunaris-AOSP/frameworks_native" />
+  <remove-project name="Lunaris-AOSP/system_sepolicy" />
+  <remove-project name="Lunaris-AOSP/build_soong" />
+  <remove-project name="android_device_qcom_sepolicy_vndr" />
+  <remove-project name="packages_apps_Updater" />
   <remove-project name="Lunaris-AOSP/packages_apps_Updater" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
 
@@ -277,6 +283,31 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            path="frameworks/base" 
            remote="source" 
            revision="16.2" 
+           clone-depth="1" />
+  <project name="luna_frameworks_av" 
+           path="frameworks/base" 
+           remote="source" 
+           revision="16.2" 
+           clone-depth="1" />
+  <project name="luna_frameworks_native" 
+           path="frameworks/base" 
+           remote="source" 
+           revision="16.2" 
+           clone-depth="1" />
+  <project name="luna_system_sepolicy" 
+           path="frameworks/base" 
+           remote="source" 
+           revision="16" 
+           clone-depth="1" />
+  <project name="luna_build_soong" 
+           path="frameworks/base" 
+           remote="source" 
+           revision="16.2" 
+           clone-depth="1" />
+  <project name="android_device_qcom_sepolicy_vndr"
+           path="frameworks/base" 
+           remote="source" 
+           revision="lineage-23.2-caf-sm8650" 
            clone-depth="1" />
 </manifest>
 LOCALMANIFEST
