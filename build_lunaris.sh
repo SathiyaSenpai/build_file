@@ -259,7 +259,7 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
   <project name="proprietary_vendor_oplus_camera"
            path="vendor/oplus/camera"
            remote="klaus"
-           revision="17-avalon" />
+           revision="16-avalon" />
   <project name="packages_apps_AxionWidgets"
            path="packages/apps/AxionWidgets"
            remote="source"
@@ -272,6 +272,8 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="Lunaris-AOSP/system_sepolicy" />
   <remove-project name="Lunaris-AOSP/build_soong" />
   <remove-project name="packages_apps_Updater" />
+  <remove-project name="LineageOS/android_packages_apps_Aperture" />
+  <remove-project name="LineageOS/android_packages_apps_Glimpse" />
   <remove-project name="Lunaris-AOSP/packages_apps_Updater" />
   <remove-project name="LineageOS/android_device_qcom_sepolicy_vndr" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
@@ -303,7 +305,6 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
   <project name="luna_system_sepolicy" 
            path="system/sepolicy" 
            remote="source" 
-           revision="16" 
            clone-depth="1" />
   <project name="luna_build_soong" 
            path="build/soong" 
