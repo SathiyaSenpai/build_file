@@ -201,9 +201,16 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/LineageOS" />
   <remote name="muppets"
           fetch="https://github.com/TheMuppets" />
+  <remote name="klaus"
+          fetch="https://gitea.com/EternalMikaelson" />
 
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
+           remote="source"
+           revision="voltage-17" />
+
+  <project name="android_device_oneplus_audi"
+           path="device/oneplus/audi"
            remote="source"
            revision="voltage-17" />
   <project name="android_device_oneplus_sm8650-common"
@@ -224,6 +231,10 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-23.2" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
+           remote="source"
+           revision="16.2" />
+  <project name="proprietary_vendor_oneplus_audi"
+           path="vendor/oneplus/audi"
            remote="source"
            revision="16.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
@@ -248,8 +259,8 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="16" />
   <project name="proprietary_vendor_oplus_camera"
            path="vendor/oplus/camera"
-           remote="source"
-           revision="16" />
+           remote="klaus"
+           revision="17-avalon" />
 
   <remove-project name="vendor_voltage" />
   <remove-project name="frameworks_base_new" />
@@ -258,6 +269,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="system_sepolicy" />
   <remove-project name="build_soong" />
   <remove-project name="packages_apps_Updater" />
+  <remove-project name="packages_apps_Settings" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
   
   <project name="vos_frameworks_base_new" 
@@ -297,6 +309,10 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            clone-depth="1" />
   <project name="vos_packages_apps_Updater" 
            path="packages/apps/Updater" 
+           remote="source" 
+           revision="17" />
+  <project name="vos_packages_apps_Settings"
+           path="packages/apps/Settings" 
            remote="source" 
            revision="17" />
 
