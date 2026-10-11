@@ -271,7 +271,6 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="Lunaris-AOSP/frameworks_native" />
   <remove-project name="Lunaris-AOSP/system_sepolicy" />
   <remove-project name="Lunaris-AOSP/build_soong" />
-  <remove-project name="packages_apps_Updater" />
   <remove-project name="LineageOS/android_packages_apps_Aperture" />
   <remove-project name="LineageOS/android_packages_apps_Glimpse" />
   <remove-project name="Lunaris-AOSP/packages_apps_Updater" />
