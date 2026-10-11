@@ -304,7 +304,8 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            clone-depth="1" />
   <project name="luna_system_sepolicy" 
            path="system/sepolicy" 
-           remote="source" 
+           remote="source"
+           revision="16.2"
            clone-depth="1" />
   <project name="luna_build_soong" 
            path="build/soong" 
