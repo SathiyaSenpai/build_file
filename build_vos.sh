@@ -249,6 +249,11 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
 
   <remove-project name="vendor_voltage" />
   <remove-project name="frameworks_base_new" />
+  <remove-project name="frameworks_av" />
+  <remove-project name="frameworks_native" />
+  <remove-project name="system_sepolicy" />
+  <remove-project name="build_soong" />
+  <remove-project name="android_device_qcom_sepolicy_vndr" />
   <remove-project name="packages_apps_Updater" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
   
@@ -256,6 +261,31 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            path="frameworks/base" 
            remote="source" 
            revision="17.0" 
+           clone-depth="1" />
+  <project name="vos_frameworks_av" 
+           path="frameworks/base" 
+           remote="source" 
+           revision="17" 
+           clone-depth="1" />
+  <project name="vos_frameworks_native" 
+           path="frameworks/base" 
+           remote="source" 
+           revision="17" 
+           clone-depth="1" />
+  <project name="vos_system_sepolicy" 
+           path="frameworks/base" 
+           remote="source" 
+           revision="17" 
+           clone-depth="1" />
+  <project name="vos_build_soong" 
+           path="frameworks/base" 
+           remote="source" 
+           revision="17" 
+           clone-depth="1" />
+  <project name="android_device_qcom_sepolicy_vndr"
+           path="frameworks/base" 
+           remote="source" 
+           revision="lineage-24.0-caf-sm8650" 
            clone-depth="1" />
   <project name="vendor_voltage" 
            path="vendor/voltage" 
