@@ -297,10 +297,10 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            remote="source" 
            revision="17" 
            clone-depth="1" />
-  <project name="android_device_qcom_sepolicy_vndr"
-           path="device/qcom/sepolicy/vndr" 
+  <project name="vos_device_qcom_sepolicy_vndr_sm8650"
+           path="device/qcom/sepolicy_vndr/sm8650" 
            remote="source" 
-           revision="lineage-24.0-caf-sm8650" 
+           revision="17" 
            clone-depth="1" />
   <project name="vendor_voltage" 
            path="vendor/voltage" 
