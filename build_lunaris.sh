@@ -254,6 +254,10 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'LOCALMANIFEST'
            path="vendor/oneplus/ltw"
            remote="source"
            revision="16" />
+  <project name="proprietary_vendor_oplus_camera"
+           path="vendor/oplus/camera"
+           remote="source"
+           revision="16" />
   <project name="packages_apps_AxionWidgets"
            path="packages/apps/AxionWidgets"
            remote="source"
