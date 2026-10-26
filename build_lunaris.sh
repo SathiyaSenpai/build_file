@@ -306,6 +306,12 @@ rm -rf vendor/lineage-priv
 git clone "https://${GH_TOKEN}@github.com/SathiyaSenpai/lineage-priv.git" -b main vendor/lineage-priv || { tg_send "❌ <b>${LOG_TAG}</b>
 Failed to clone lineage-priv"; exit 1; }
 
+echo "fetching LFS files for oplus camera..."
+git -C vendor/oplus/camera lfs install
+git -C vendor/oplus/camera lfs fetch
+git -C vendor/oplus/camera lfs checkout || { tg_send "❌ <b>${LOG_TAG}</b>
+LFS checkout failed for oplus camera"; exit 1; }
+
 echo "sync done"
 tg_send "✅ <b>${LOG_TAG}</b>
 <b>Status:</b> Sync done, starting build..."
