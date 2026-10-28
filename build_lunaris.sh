@@ -303,7 +303,7 @@ Source sync failed"; exit 1; }
 echo "cloning private repo..."
 rm -rf vendor/lineage-priv
 
-git clone "https://SathiyaSenpai:${GH_TOKEN}@github.com/SathiyaSenpai/lineage-priv.git" -b main vendor/lineage-priv || { tg_send "❌ <b>${LOG_TAG}</b>
+git clone "https://SathiyaSenpai:${MY_GH_TOKEN}@github.com/SathiyaSenpai/lineage-priv.git" -b main vendor/lineage-priv || { tg_send "❌ <b>${LOG_TAG}</b>
 Failed to clone lineage-priv"; exit 1; }
 
 echo "fetching LFS files for oplus camera..."
