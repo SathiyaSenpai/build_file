@@ -269,7 +269,6 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="system_sepolicy" />
   <remove-project name="build_soong" />
   <remove-project name="packages_apps_Updater" />
-  <remove-project name="packages_apps_Settings" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
   
   <project name="vos_frameworks_base_new" 
@@ -309,10 +308,6 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            clone-depth="1" />
   <project name="vos_packages_apps_Updater" 
            path="packages/apps/Updater" 
-           remote="source" 
-           revision="17" />
-  <project name="vos_packages_apps_Settings"
-           path="packages/apps/Settings" 
            remote="source" 
            revision="17" />
 
