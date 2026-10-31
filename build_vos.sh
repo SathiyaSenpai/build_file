@@ -267,6 +267,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="frameworks_native" />
   <remove-project name="system_sepolicy" />
   <remove-project name="build_soong" />
+  <remove-project name="device_qcom_sepolicy_vndr_sm8650" />
   <remove-project name="packages_apps_Updater" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
   
