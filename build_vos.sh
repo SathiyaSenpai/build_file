@@ -208,7 +208,6 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            path="device/oneplus/avalon"
            remote="source"
            revision="voltage-17" />
-
   <project name="android_device_oneplus_audi"
            path="device/oneplus/audi"
            remote="source"
@@ -220,15 +219,15 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <project name="android_kernel_oneplus_sm8650"
            path="kernel/oneplus/sm8650"
            remote="source"
-           revision="lineage-23.2" />
+           revision="lineage-24.0" />
   <project name="android_kernel_oneplus_sm8650-modules"
            path="kernel/oneplus/sm8650-modules"
            remote="source"
-           revision="lineage-23.2" />
+           revision="lineage-24.0" />
   <project name="android_kernel_oneplus_sm8650-devicetrees"
            path="kernel/oneplus/sm8650-devicetrees"
            remote="source"
-           revision="lineage-23.2" />
+           revision="lineage-24.0" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
            remote="source"
