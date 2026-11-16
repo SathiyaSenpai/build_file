@@ -312,7 +312,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            clone-depth="1" />
   <project name="lineage-priv" 
            path="vendor/voltage-priv" 
-           remote="source" 
+           remote="sathiya" 
            revision="voltage" />
   <project name="vos_packages_apps_Updater" 
            path="packages/apps/Updater" 
