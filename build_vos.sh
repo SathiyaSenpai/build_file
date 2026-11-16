@@ -203,6 +203,8 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/TheMuppets" />
   <remote name="lab"
           fetch="https://gitlab.com/sathiyasenpai" />
+<remote name="sathiya"
+          fetch="https://github.com/sathiyasenpai" />
 
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
@@ -262,6 +264,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="17-avalon" />
 
   <remove-project name="vendor_voltage" />
+  <remove-project name="vendor_voltage-priv_keys" />
   <remove-project name="frameworks_base_new" />
   <remove-project name="frameworks_av" />
   <remove-project name="frameworks_native" />
@@ -307,6 +310,10 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            remote="source" 
            revision="17" 
            clone-depth="1" />
+  <project name="lineage-priv" 
+           path="vendor/voltage-priv" 
+           remote="source" 
+           revision="voltage" />
   <project name="vos_packages_apps_Updater" 
            path="packages/apps/Updater" 
            remote="source" 
