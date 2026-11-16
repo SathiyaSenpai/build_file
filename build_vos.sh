@@ -201,8 +201,8 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
           fetch="https://github.com/LineageOS" />
   <remote name="muppets"
           fetch="https://github.com/TheMuppets" />
-  <remote name="klaus"
-          fetch="https://gitea.com/EternalMikaelson" />
+  <remote name="lab"
+          fetch="https://gitlab.com/sathiyasenpai" />
 
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
@@ -230,15 +230,15 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="lineage-24.0" />
   <project name="proprietary_vendor_oneplus_avalon"
            path="vendor/oneplus/avalon"
-           remote="source"
+           remote="lab"
            revision="16.2" />
   <project name="proprietary_vendor_oneplus_audi"
            path="vendor/oneplus/audi"
-           remote="source"
+           remote="lab"
            revision="16.2" />
   <project name="proprietary_vendor_oneplus_sm8650-common"
            path="vendor/oneplus/sm8650-common"
-           remote="source"
+           remote="lab"
            revision="17.0" />
   <project name="android_hardware_oplus"
            path="hardware/oplus"
@@ -258,7 +258,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            revision="16" />
   <project name="proprietary_vendor_oplus_camera"
            path="vendor/oplus/camera"
-           remote="klaus"
+           remote="lab"
            revision="17-avalon" />
 
   <remove-project name="vendor_voltage" />
@@ -269,6 +269,7 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
   <remove-project name="build_soong" />
   <remove-project name="device_qcom_sepolicy_vndr_sm8650" />
   <remove-project name="packages_apps_Updater" />
+  <remove-project name="packages_apps_Settings" />
   <remove-project name="LineageOS/android_vendor_qcom_opensource_vibrator" />
   
   <project name="vos_frameworks_base_new" 
@@ -310,7 +311,10 @@ cat > .repo/local_manifests/voltage_avalon.xml << 'LOCALMANIFEST'
            path="packages/apps/Updater" 
            remote="source" 
            revision="17" />
-
+  <project name="vos_packages_apps_Settings" 
+           path="packages/apps/Settings" 
+           remote="source" 
+           revision="17" />
 </manifest>
 LOCALMANIFEST
 
