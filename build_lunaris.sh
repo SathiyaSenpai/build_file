@@ -176,8 +176,10 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'EOF'
           fetch="https://github.com/avalon-stuffs" />
   <remote name="source"
           fetch="https://github.com/SenpaiSource" />
-  <remote name="klaus"
-          fetch="https://gitea.com/EternalMikaelson" />
+  <remote name="lab"
+          fetch="https://gitlab.com/senpaisource" />
+  <remote name="sathiya"
+          fetch="https://github.com/SathiyaSenpai" />
 
   <project name="android_device_oneplus_avalon"
            path="device/oneplus/avalon"
@@ -223,18 +225,18 @@ cat > .repo/local_manifests/lunaris_avalon.xml << 'EOF'
            path="vendor/oneplus/ir"
            remote="avalon-stuffs"
            revision="16" />
-  <project name="proprietary_vendor_oneplus_ltw"
-           path="vendor/oneplus/ltw"
-           remote="source"
-           revision="16" />
   <project name="proprietary_vendor_oplus_camera"
            path="vendor/oplus/camera"
-           remote="klaus"
+           remote="lab"
            revision="16-avalon" />
   <project name="packages_apps_AxionWidgets"
            path="packages/apps/AxionWidgets"
            remote="source"
            revision="16" />
+  <project name="lineage-priv"
+           path="vendor/lineage-priv"
+           remote="sathiya"
+           revision="main" />
 
   <remove-project name="Lunaris-AOSP/vendor_lineage" />
   <remove-project name="Lunaris-AOSP/frameworks_base" />
